@@ -1,0 +1,89 @@
+﻿@page "{searchString?}"
+@model IndexModel
+@{
+    ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
+    int item_number = 0;
+}
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col6">
+            <h2 class="text-primary">Lista de Ponches de Empleados</h2>
+        </div>
+        <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
+            <form method="post">
+                <strong>Parametros de Fecha:</strong>
+                <br /><br />
+                Fecha desde: <input class="form-control" asp-for="ToDate" />
+                Fecha hasta: <input class="form-control" asp-for="FromDate" />
+                <br />
+                <button class="btn btn-primary" type="submit" asp-page-handler="Submit" onclick='document.getElementById("chkAllRecords").checked = false' id="btn_loadData">Cargar por Fecha</button>
+                <br />
+            </form>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-md-12">
+                <form style="display:flex;justify-content:flex-end">
+                    <p>
+                        Buscar por: <input type="text" asp-for="SearchString" />
+                        <input type="submit" value="Filtrar" class="btn btn-primary" />
+                        <a asp-page="Index">Todos los registros</a>
+                    </p>
+                </form>
+                
+            </div>
+        </div>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Registro Num.</th>
+                    <th>Id. Empleado</th>
+                    <th>Nombre del Empleado</th>
+                    <th>Fecha y Hora Marca</th>
+                    <th>Device Id.</th>
+                    <th>Nombre del Dispositivo</th>
+                    <th>Id Dpto.</th>
+                    <th>Departamento</th>
+                </tr>
+            </thead>  
+            <tbody>
+                @foreach(var item in Model.ListaPonches)
+                {
+                    item_number += 1;
+                    <tr>
+                        <td>
+                            @item_number
+                        </td>
+                        <td>
+                            @item.IdUser
+                        </td>
+                        <td>
+                            @item.IdUserNavigation.Name
+                        </td>
+                        <td>
+                            @item.RecordTime
+                        </td>
+                        <td>
+                            @item.MachineNumber
+                        </td>
+                        <td>
+                            @item.IdDeviceNavigation.Description
+                        </td>
+                        <td>
+                            @item.IdUserNavigation.IdDepartment
+                        </td>
+                        <td>
+                            @item.IdUserNavigation.IdDepartmentNavigation.Description
+                        </td>
+                    </tr>
+                }  
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    
+</script>
+
+
+
