@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataFlowRRHH.Models;
 
@@ -16,4 +17,5 @@ public partial class Shift
     public int? CuttingMinute { get; set; }
 
     public int? Cycle { get; set; }
+
 }

@@ -86,4 +86,9 @@ public partial class User
 
     [ForeignKey("IdDepartment")]
     public virtual Department IdDepartmentNavigation { get; set; } = null!;
+
+    [ForeignKey("IdUser")]
+    public virtual ICollection<UserShift> UserShiftNavigation { get; set; } = new List<UserShift>();
+
+
 }

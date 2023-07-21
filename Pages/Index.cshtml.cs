@@ -72,9 +72,25 @@ namespace DataFlowRRHH.Pages
         }
 		public async Task OnPostSearchProfileEmployee() 
 		{
-			var query = await (from user in db.Users
-							   .Where(x => x.IdUser == IdEmployee)
-							   select user).ToListAsync();
+			
+			// Consulta de los horarios asignados a los empleados.
+			var horarios = await db.Users.Select(x => new { 
+				Iduser = x.IdUser,
+				Nombre = x.Name,
+				Salario = x.HourSalary,
+				Horarios = x.UserShiftNavigation.Select(x => new 
+				{ 
+					x.ShiftId, 
+					Name = x.ShiftNavigation.Description,
+					x.BeginDate,
+					x.EndDate
+				}),
+				x.IdDepartment,
+				DepartamentoName = x.IdDepartmentNavigation.Description
+			}).FirstOrDefaultAsync(p => p.Iduser == IdEmployee );
+
+
+
 		}
 
 
