@@ -20,6 +20,9 @@ namespace DataFlowRRHH.Pages
 		[BindProperty(SupportsGet = true)]
 		public string? SearchString { get; set; }
 
+		[BindProperty(SupportsGet = true)]
+        public int IdEmployee { get; set; }
+
 
         public IndexModel(BdbioAdminSqlContext _db)
 		{
@@ -67,6 +70,13 @@ namespace DataFlowRRHH.Pages
             
             ListaPonches = await listaPonches.ToListAsync();
         }
-       
-	}
+		public async Task OnPostSearchProfileEmployee() 
+		{
+			var query = await (from user in db.Users
+							   .Where(x => x.IdUser == IdEmployee)
+							   select user).ToListAsync();
+		}
+
+
+    }
 }

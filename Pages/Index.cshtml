@@ -7,8 +7,9 @@
 <div class="container p-3">
     <div class="row pt-4">
         <div class="col6">
-            <h2 class="text-primary">Lista de Ponches de Empleados</h2>
+            <h2 class="text-primary">Registro de Asistencia Empleados.</h2>
         </div>
+        <!--Cuadro de Parametros de Fecha-->
         <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
             <form method="post">
                 <strong>Parametros de Fecha:</strong>
@@ -20,12 +21,57 @@
                 <br />
             </form>
         </div>
+        <!--Cuadro de Profile de Empleadp-->
+        <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px;margin-left:5px;overflow-y: scroll;height:300px">
+            <strong>Profile del Empleado:</strong>
+            <!--Textbox de busqueda de empleado-->
+           <form method="post">
+                <input type="text" placeholder="Introduzca Id Usuario..." class="form-control my-2" value="@Model.IdEmployee" asp-for="IdEmployee" />
+                <button class="btn btn-primary my-2" asp-page-handler="SearchProfileEmployee" type="submit">Buscar Datos Usuario</button>
+           </form>
+            
+            <div class="list-group">
+                <!--Lista de Horarios de Empleado-->
+                <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">NOMBRE: NELSON PINO</h5>
+                    </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">1.- HORARIO DIURNO:</h5>
+                    </div>
+                    <p class="mb-1">Inicia  : 20/07/2023 - 08:00 a.m.</p>
+                    <p class="mb-1">Termina : 25/07/2023 - 05:00 p.m.</p>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">2.- HORARIO NOCTURNO:</h5>
+                    </div>
+                    <p class="mb-1">Inicia  : 28/07/2023 - 08:00 a.m.</p>
+                    <p class="mb-1">Termina : 02/08/2023 - 05:00 p.m.</p>
+                </a>
+                <!--Cuadro de datos de empleado como sueldo y departamento-->
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Salario Hora:
+                        <span class="badge bg-primary rounded-pill">$120.00</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Departamento :
+                        <span class="badge bg-primary rounded-pill">Sistemas</span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
         <br/>
+        <!--Navbar con el search de busqueda de ponches-->
         <div class="row">
             <div class="col-md-12">
-                <form style="display:flex;justify-content:flex-end">
+                <form style="display:flex;justify-content:flex-end" >
                     <p>
-                        Buscar por: <input type="text" asp-for="SearchString" />
+                        Buscar por: <input type="text" asp-for="SearchString"  />
                         <input type="submit" value="Filtrar" class="btn btn-primary" />
                         <a asp-page="Index">Todos los registros</a>
                     </p>
@@ -33,7 +79,9 @@
                 
             </div>
         </div>
+        <!--Tabla de registros de ponches-->
         <table class="table table-bordered table-striped table-hover">
+            <!--Encabezado de la tabla-->
             <thead>
                 <tr>
                     <th>Registro Num.</th>
@@ -46,6 +94,7 @@
                     <th>Departamento</th>
                 </tr>
             </thead>  
+            <!--Detalle de tabla-->
             <tbody>
                 @foreach(var item in Model.ListaPonches)
                 {
@@ -81,9 +130,6 @@
         </table>
     </div>
 </div>
-<script>
-    
-</script>
 
 
 
