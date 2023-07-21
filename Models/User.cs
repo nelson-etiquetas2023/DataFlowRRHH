@@ -83,7 +83,7 @@ public partial class User
     public DateTime? ExceptionPermitionEnd { get; set; }
 
     public virtual ICollection<Record> Records { get; set; } = new List<Record>();
-	
+
     [ForeignKey("IdDepartment")]
-	public virtual Department IdDepartmentNavigation { get; set; } = null!;
+    public virtual Department IdDepartmentNavigation { get; set; } = null!;
 }

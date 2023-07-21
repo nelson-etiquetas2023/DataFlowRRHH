@@ -9,7 +9,7 @@ public partial class Department
 
     public int? IdParent { get; set; }
 
-    public string Description { get; set; } = null!;    
+    public string Description { get; set; } = null!;
 
     public string? SupervisorName { get; set; }
 

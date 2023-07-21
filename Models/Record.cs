@@ -27,9 +27,9 @@ public partial class Record
     public DateTime ModifiedDate { get; set; }
 
     public int ModifiedBy { get; set; }
-       
+
     public virtual User IdUserNavigation { get; set; } = null!;
 
-	[ForeignKey("MachineNumber")]
-	public virtual Device IdDeviceNavigation { get; set; } = null!;
+    [ForeignKey("MachineNumber")]
+    public virtual Device IdDeviceNavigation { get; set; } = null!;
 }
