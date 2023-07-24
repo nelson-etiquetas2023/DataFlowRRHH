@@ -1,4 +1,5 @@
 ﻿@page "{searchString?}"
+
 @model IndexModel
 @{
     ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
@@ -26,40 +27,35 @@
             <strong>Profile del Empleado:</strong>
             <!--Textbox de busqueda de empleado-->
            <form method="post">
-                <input type="text" placeholder="Introduzca Id Usuario..." class="form-control my-2" value="@Model.IdEmployee" asp-for="IdEmployee" />
+                <input type="text" placeholder="Introduzca Id Usuario..." class="form-control my-2" value="@Model.IdEmployee" asp-for="@Model.IdEmployee" asp-route-id="@Model.IdEmployee" />
                 <button class="btn btn-primary my-2" asp-page-handler="SearchProfileEmployee" type="submit">Buscar Datos Usuario</button>
            </form>
             
             <div class="list-group">
                 <!--Lista de Horarios de Empleado-->
-                <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">NOMBRE: NELSON PINO</h5>
-                    </div>
-                </a>
                 <a href="#" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">1.- HORARIO DIURNO:</h5>
+                        <h5 class="mb-1">NOMBRE: @Model.NameEmployee</h5>
                     </div>
-                    <p class="mb-1">Inicia  : 20/07/2023 - 08:00 a.m.</p>
-                    <p class="mb-1">Termina : 25/07/2023 - 05:00 p.m.</p>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">2.- HORARIO NOCTURNO:</h5>
-                    </div>
-                    <p class="mb-1">Inicia  : 28/07/2023 - 08:00 a.m.</p>
-                    <p class="mb-1">Termina : 02/08/2023 - 05:00 p.m.</p>
-                </a>
+                @foreach(var item in Model.HorariosAsignados){
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@item.Nombre</h5>
+                        </div>
+                        <p class="mb-1">Comienza: @item.Date_Start</p>
+                        <p class="mb-1">Termina : @item.Date_Finish</p>
+                    </a>   
+                }
                 <!--Cuadro de datos de empleado como sueldo y departamento-->
                 <ul class="list-group">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         Salario Hora:
-                        <span class="badge bg-primary rounded-pill">$120.00</span>
+                        <span class="badge bg-primary rounded-pill">@Model.Salario</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         Departamento :
-                        <span class="badge bg-primary rounded-pill">Sistemas</span>
+                        <span class="badge bg-primary rounded-pill">@Model.Departamento</span>
                     </li>
 
                 </ul>
