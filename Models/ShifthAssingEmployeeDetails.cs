@@ -4,10 +4,11 @@ namespace DataFlowRRHH.Models
 {
     public class ShifthAssingEmployeeDetails
     {
-        public string UserId { get; set; } = "";
-        public string UserShifthId { get; set; } = "";
-        public string ShiftId { get; set; } = "";
+        public int IdUser { get; set; } = 0;
+        public int UserShiftId { get; set; } = 0;
+        public int ShiftId { get; set; } = 0;
         public string Description { get; set; } = "";
-        public double SalaryHour { get; set; } = 0;
+        public string Name{ get; set; } = "";
+        public decimal HourSalary { get; set; } = 0;
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection;
 
 
 namespace DataFlowRRHH.Service
@@ -17,6 +18,7 @@ namespace DataFlowRRHH.Service
                 ConnectionString = @"Data Source=SERVER-ETIQUETA;Initial Catalog=BDBioAdminSQL;User Id=Npino;Password=Jossycar5%;TrustServerCertificate=True;"
             };
         }
+
         public int ObtenerHorarioEmpleado(int userid)
         {
             SqlCommand comando = new()
@@ -98,7 +100,7 @@ namespace DataFlowRRHH.Service
             micomm.Close();
             return SalarioHora;
         }
-        public DataTable HorariosAsignadosxEmpleados()
+        public List<ShifthAssingEmployeeDetails> HorariosAsignadosxEmpleados()
         {
             DataTable dt = new();
             //comando sql para traer los empleados del bioadmin.
@@ -108,17 +110,18 @@ namespace DataFlowRRHH.Service
                 Connection = micomm,
                 CommandType = CommandType.Text
             };
-            comando.CommandText = comando.CommandText = "SELECT a.[IdUser],b.[UserShiftId],b.[ShiftId],c.[Description]," +
-            "a.[IdentificationNumber]," +
-            "a.[Name],a.[Gender],a.[Title],[Birthday],[PhoneNumber],[MobileNumber],[Address]" +
-            ",[ExternalReference],a.[IdDepartment],d.Description as Departamento,[Position],[Active],[Picture],[PictureOrientation]" +
-            ",[Privilege],[HourSalary],[Password],[PreferredIdLanguage],[Email],a.[Comment],[ProximityCard]" +
-            ",[LastRecord],[LastLogin],[CreatedBy],[CreatedDatetime],[ModifiedBy],[ModifiedDatetime]" +
-            ",[AdministratorType],[IdProfile],[DevPassword],[UseShift],[SendSMS],[SMSPhone],[TemplateCode]" +
-            ",[ApplyExceptionPermition],[ExceptionPermitionBegin],[ExceptionPermitionEnd] FROM [BDBioAdminSQL].[dbo].[User] a " +
-            "LEFT JOIN [BDBioAdminSQL].[dbo].[UserShift] b ON a.IdUser = b.IdUser " +
-            "LEFT JOIN [BDBioAdminSQL].[dbo].[Shift] c ON b.ShiftId = c.ShiftId " +
-            "LEFT JOIN [BDBioAdminSQL].[dbo].[Department] d ON a.[IdDepartment] = d.[IdDepartment]";
+            comando.CommandText = comando.CommandText = "SELECT a.[IdUser],(ISNULL(b.[UserShiftId], '')) as [UserShiftId]," +
+                "(ISNULL(b.[ShiftId], '')) as [ShiftId], (ISNULL(d.Description, '')) as [Description]," +
+                "a.[IdentificationNumber],a.[Name],a.[Gender],a.[Title],[Birthday],[PhoneNumber],[MobileNumber],[Address]," +
+                "[ExternalReference],a.[IdDepartment],d.Description as Departamento,[Position],[Active],[Picture],[PictureOrientation]" +
+                ",[Privilege],[HourSalary],[Password],[PreferredIdLanguage],[Email],a.[Comment],[ProximityCard]" +
+                ",[LastRecord],[LastLogin],[CreatedBy],[CreatedDatetime],[ModifiedBy],[ModifiedDatetime]" +
+                ",[AdministratorType],[IdProfile],[DevPassword],[UseShift],[SendSMS],[SMSPhone],[TemplateCode]" +
+                ",[ApplyExceptionPermition],[ExceptionPermitionBegin],[ExceptionPermitionEnd] FROM[BDBioAdminSQL].[dbo].[User] a " +
+                "LEFT JOIN[BDBioAdminSQL].[dbo].[UserShift] b ON a.IdUser = b.IdUser " +
+                "LEFT JOIN[BDBioAdminSQL].[dbo].[Shift] c ON b.ShiftId = c.ShiftId " +
+                "LEFT JOIN[BDBioAdminSQL].[dbo].[Department] d ON a.[IdDepartment] = d.[IdDepartment] ";
+
             micomm.Open();
             comando.ExecuteNonQuery();
             SqlDataAdapter da = new()
@@ -126,7 +129,24 @@ namespace DataFlowRRHH.Service
                 SelectCommand = comando
             };
             da.Fill(dt);
-            return dt;
+
+            List<ShifthAssingEmployeeDetails> horarios;
+
+            horarios = dt.AsEnumerable().Select(x => new ShifthAssingEmployeeDetails {
+                IdUser = x.Field<int>("IdUser"),
+                Description = x.Field<string>("Description")!,
+                Name = x.Field<string>("Name")!,
+                UserShiftId = x.Field<int>("UserShiftId"),
+                ShiftId = x.Field<int>("ShiftId"),
+                HourSalary = x.Field<decimal>("HourSalary") 
+            }).ToList();
+
+            return horarios;
+            
+
+
+
+            
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using DataFlowRRHH.Models;
 using Microsoft.EntityFrameworkCore;
 using DataFlowRRHH.Service;
-using System.Data;
+
 
 namespace DataFlowRRHH.Pages
 {
@@ -56,7 +56,7 @@ namespace DataFlowRRHH.Pages
             var parametros2 = she.ObtenerParametrosHorarios(1,1);
             var parametros3 = she.ObtenerParametrosHorarios(1,2);
 			var sueldo = she.ObtenerSalarioxHora(2);
-			DataTable empleados = she.HorariosAsignadosxEmpleados();
+			List<ShifthAssingEmployeeDetails> horarios = she.HorariosAsignadosxEmpleados();
 
 
 
