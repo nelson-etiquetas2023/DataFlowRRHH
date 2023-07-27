@@ -5,20 +5,20 @@
     ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
     int item_number = 0;
 }
-<div class="container p-3">
+<div class="container">
     <div class="row pt-4">
         <div class="col6">
             <h2 class="text-primary">Registro de Asistencia Empleados.</h2>
         </div>
         <!--Cuadro de Parametros de Fecha-->
         <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
-            <form method="post">
+            <form method="get">
                 <strong>Parametros de Fecha:</strong>
                 <br /><br />
                 Fecha desde: <input class="form-control" asp-for="ToDate" />
                 Fecha hasta: <input class="form-control" asp-for="FromDate" />
                 <br />
-                <button class="btn btn-primary" type="submit" asp-page-handler="Submit" onclick='document.getElementById("chkAllRecords").checked = false' id="btn_loadData">Cargar por Fecha</button>
+                <button class="btn btn-primary" type="submit">Cargar Datos</button>
                 <br />
             </form>
         </div>
@@ -26,7 +26,7 @@
         <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px;margin-left:5px;overflow-y: scroll;height:300px">
             <strong>Profile del Empleado:</strong>
             <!--Textbox de busqueda de empleado-->
-           <form method="post">
+           <form method="get">
                 <input type="text" placeholder="Introduzca Id Usuario..." class="form-control my-2" value="@Model.IdEmployee" asp-for="@Model.IdEmployee" asp-route-id="@Model.IdEmployee" />
                 <button class="btn btn-primary my-2" asp-page-handler="SearchProfileEmployee" type="submit">Buscar Datos Usuario</button>
            </form>
@@ -62,21 +62,8 @@
             </div>
         </div>
         <br/>
-        <!--Navbar con el search de busqueda de ponches-->
-        <div class="row">
-            <div class="col-md-12">
-                <form style="display:flex;justify-content:flex-end" >
-                    <p>
-                        Buscar por: <input type="text" asp-for="SearchString"  />
-                        <input type="submit" value="Filtrar" class="btn btn-primary" />
-                        <a asp-page="Index">Todos los registros</a>
-                    </p>
-                </form>
-                
-            </div>
-        </div>
         <!--Tabla de registros de ponches-->
-        <table class="table table-bordered table-striped table-hover">
+        <table id="TablePonches" class="cell-border compact stripe nowrap">
             <!--Encabezado de la tabla-->
             <thead>
                 <tr>
@@ -88,6 +75,8 @@
                     <th>Nombre del Dispositivo</th>
                     <th>Id Dpto.</th>
                     <th>Departamento</th>
+                    <th>Tipo Horario</th>
+
                 </tr>
             </thead>  
             <!--Detalle de tabla-->
@@ -103,29 +92,124 @@
                             @item.IdUser
                         </td>
                         <td>
-                            @item.IdUserNavigation.Name
+                            @item.NameUser
                         </td>
                         <td>
                             @item.RecordTime
                         </td>
                         <td>
-                            @item.MachineNumber
+                            @item.IdDevice
                         </td>
                         <td>
-                            @item.IdDeviceNavigation.Description
+                            @item.DeviceName
                         </td>
                         <td>
-                            @item.IdUserNavigation.IdDepartment
+                            @item.IdDepartment
                         </td>
                         <td>
-                            @item.IdUserNavigation.IdDepartmentNavigation.Description
+                            @item.DepartmentName
+                        </td>
+                        <td>
+                            @item.Type_Shift
                         </td>
                     </tr>
                 }  
             </tbody>
         </table>
     </div>
+    <!-- Cuadro de las Horas Extras. -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Horas Extras Empleados</h1>
+            <button class="btn btn-primary">Calcular</button>
+            <button class="btn btn-info">Reporte</button>
+            <button class="btn btn-danger">Exportar</button>
+        </div/>
+    </div>
 </div>
+
+<div class="container">
+     <div class="row">
+            <!-- Cuadro de horas extras -->
+            
+            <table id="TableHorasExtras" class="table table-bordered table-striped table-hover" style="margin-top:10px">
+                <!--Encabezado de la tabla-->
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Id. Emp.</th>
+                        <th>Nombre Empleado</th>
+                        <th>Fecha</th>
+                        <th>M1</th>
+                        <th>M2</th>
+                        <th>M3</th>
+                        <th>M4</th>
+                        <th>Registros</th>
+                        <th>Total Horas</th>
+                        
+                    </tr>
+                </thead> 
+                <tbody>
+                @{int row = 0;}
+                @foreach(var item in Model.jornadas)
+                {
+                    row += 1;
+                    <tr>
+                        <td>
+                            @row
+                        </td>
+                        <td>
+                            @item.IdUser
+                        </td>
+                        <td>
+                            @item.Empleado
+                        </td>
+                        <td>
+                            @item.Fecha.ToShortDateString()    
+                        </td>
+                        <td>
+                            @item.Mark1 
+                        </td>
+                        <td>
+                            @item.Mark2 
+                        </td>
+                        <td>
+                            @item.Mark3 
+                        </td>
+                        <td>
+                            @item.Mark4 
+                        </td>
+                        <td>
+                            @item.Ponches
+                        </td>
+                        <td>
+                            @item.Horas_Jornada
+                        </td>
+                    
+                    </tr>
+                }  
+            </tbody>
+
+
+            </table>
+        </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        let table1 = new DataTable('#TablePonches');
+        let table2 = new DataTable('#TableHorasExtras');
+    </script>
+    
+}
+
+
+
+
+   
+        
 
 
 

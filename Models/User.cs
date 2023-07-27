@@ -24,7 +24,7 @@ public partial class User
 
     public string? Address { get; set; }
 
-    public string? ExternalReference { get; set; }
+    public string ExternalReference { get; set; } = null!;
 
     public int IdDepartment { get; set; }
 

@@ -32,4 +32,5 @@ public partial class Record
 
     [ForeignKey("MachineNumber")]
     public virtual Device IdDeviceNavigation { get; set; } = null!;
+    
 }

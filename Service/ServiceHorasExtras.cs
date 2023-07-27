@@ -1,6 +1,7 @@
 ﻿using DataFlowRRHH.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
@@ -10,6 +11,7 @@ namespace DataFlowRRHH.Service
 {
     public class ServiceHorasExtras
     {
+        public DataTable DtHorasExtras = new();
         public SqlConnection micomm;
         public ServiceHorasExtras()
         {
@@ -19,6 +21,220 @@ namespace DataFlowRRHH.Service
             };
         }
 
+        public List<Jornada> RunReportCompleteHorasExtras(List<CamposRegistros> listaponches) 
+        {
+            TimeSpan Entrada_Horario = new(18, 0, 0);
+            TimeSpan Salida_Horario = new(6, 0, 0);
+
+            TimeSpan tsresult = Entrada_Horario.Subtract(Salida_Horario);
+
+            var jornadas = (from q in listaponches
+                            group q by new
+                            {
+                                q.IdUser,
+                                fecha = string.IsNullOrEmpty(q.Type_Shift).Equals("N") ?
+                                             q.RecordTime.AddHours(15).Date :
+                                             q.RecordTime.Date
+                            } into grp
+                            select new Jornada {
+                                IdUser = grp.Key.IdUser,
+                                Empleado = grp.FirstOrDefault()!.NameUser ,
+                                Fecha = grp.FirstOrDefault()!.RecordTime,
+                                Mark1 = Convert.ToString(grp.FirstOrDefault()!.RecordTime.ToShortTimeString()),
+                                Mark2 = grp.Count() > 1 ? Convert.ToString(grp.ElementAtOrDefault(1)!.RecordTime.ToShortTimeString()) : "",
+                                Mark3 = grp.Count() > 2 ? Convert.ToString(grp.ElementAtOrDefault(2)!.RecordTime.ToShortTimeString()) : "",
+                                Mark4 = grp.Count() > 3 ? Convert.ToString(grp.ElementAtOrDefault(3)!.RecordTime.ToShortTimeString()) : "",
+                                Ponches = grp.Count(),
+                                Horas_Jornada = (grp.LastOrDefault()!.RecordTime - grp.FirstOrDefault()!.RecordTime)
+                            }).ToList();
+            return jornadas;
+        }
+
+        public void RunReportDetailsHorasExtras(List<Record> listaponches) 
+        {
+            if (listaponches == null)
+            {
+                return;
+            }
+            //definir las columnas del reporte
+            DtHorasExtras.Columns.Add("UserId", typeof(int));
+            DtHorasExtras.Columns.Add("UserName", typeof(string));
+            DtHorasExtras.Columns.Add("Jornada", typeof(string));
+            DtHorasExtras.Columns.Add("Departamento", typeof(string));
+            DtHorasExtras.Columns.Add("FechaMarca", typeof(DateTime));
+            DtHorasExtras.Columns.Add("HorasExtras", typeof(decimal));
+            DtHorasExtras.Columns.Add("Factor", typeof(int));
+            DtHorasExtras.Columns.Add("Salario", typeof(double));
+            DtHorasExtras.Columns.Add("SalarioFraccion", typeof(double));
+            DtHorasExtras.Columns.Add("Monto", typeof(double));
+            ServiceHorasExtras she = new();
+            //reporte horas extras
+            foreach (var item in listaponches)
+            {
+                int userid = Convert.ToInt16(item.IdUser);
+                int shiftf = she.ObtenerHorarioEmpleado(userid);
+                int indexday = Convert.ToInt16(item.RecordTime.DayOfWeek - 1);
+                if (indexday == -1) indexday = 6;
+                string dia = item.RecordTime.ToString("dddd");
+                //Parametros de los horarios
+                ShiftAssingEmployeeRow hfp = she.ObtenerParametrosHorarios(shiftf, indexday);
+                //guarde la jornada en external reference.
+                item.IdUserNavigation.ExternalReference = "de: " + hfp.Jornada_Start + " a: " + hfp.Jornada_End;
+                item.IdUserNavigation.IdDepartmentNavigation.Description = she.GetDepartamento(userid);
+                //nivel 1 de condiciones
+                var ch1_str1 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_Start + " :00:00 PM";
+                var ch1_str2 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_End + " :00:00 PM";
+                DateTime ch1_date1 = Convert.ToDateTime(ch1_str1);
+                DateTime ch1_date2 = Convert.ToDateTime(ch1_str2);
+                int ch1_factor = Convert.ToInt16(hfp.Cal1_Factor);
+                TimeSpan ch1 = ch1_date2 - ch1_date1;
+                //nivel 2 de condiciones
+                var ch2_str1 = item.RecordTime.ToShortDateString() + " " + hfp.Cal2_Start + " :00:00 PM";
+                var ch2_str2 = item.RecordTime.ToShortDateString() + " " + hfp.Cal2_End + " :00:00 PM";
+                DateTime ch2_date1 = Convert.ToDateTime(ch2_str1);
+                DateTime ch2_date2 = Convert.ToDateTime(ch2_str2);
+                int ch2_factor = Convert.ToInt16(hfp.Cal2_Factor);
+                TimeSpan ch2 = ch2_date2 - ch2_date1;
+                //nivel 3 de condiciones
+                var ch3_str1 = item.RecordTime.ToShortDateString() + " " + hfp.Cal3_Start + " :00:00 PM";
+                var ch3_str2 = item.RecordTime.ToShortDateString() + " " + hfp.Cal3_End + " :00:00 PM";
+                DateTime ch3_date1 = Convert.ToDateTime(ch3_str1);
+                DateTime ch3_date2 = Convert.ToDateTime(ch3_str2);
+                int ch3_factor = Convert.ToInt16(hfp.Cal3_Factor);
+                TimeSpan ch3 = ch3_date2 - ch3_date1;
+
+                //hay horas extras que calcular
+                if (item.RecordTime > ch1_date1)
+                {
+                    TimeSpan het = item.RecordTime - ch1_date1;
+                    Boolean run;
+                    //Obtener el salario x Hora.
+                    double sh = she.ObtenerSalarioxHora(userid);
+
+                    // Condiciones del primer nivel.
+                    if (het >= ch1)
+                    { 
+                        DataRow row = DtHorasExtras.NewRow();
+                        row["UserId"] = item.IdUser;
+                        row["UserName"] = item.IdUserNavigation.Name;
+                        row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                        row["Jornada"] = item.IdUserNavigation.ExternalReference;
+                        row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                        double horas_extras = (ch1.TotalMinutes / 60);
+                        row["HorasExtras"] = horas_extras;
+                        row["Factor"] = ch1_factor;
+                        row["Salario"] = sh;
+                        double salario_factor = (sh * ch1_factor) / 100;
+                        row["SalarioFraccion"] = salario_factor;
+                        row["Monto"] = Math.Round((salario_factor * horas_extras), 2, MidpointRounding.AwayFromZero);
+                        DtHorasExtras.Rows.Add(row);
+                        run = true;
+                    }
+                    else
+                    {
+                        DataRow row = DtHorasExtras.NewRow();
+                        row["UserId"] = item.IdUser;
+                        row["UserName"] = item.IdUserNavigation.Name;
+                        row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                        row["Jornada"] = item.IdUserNavigation.ExternalReference;
+                        row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                        double horas_extras = Math.Round((het.TotalMinutes / 60), 2, MidpointRounding.AwayFromZero);
+                        row["HorasExtras"] = horas_extras;
+                        row["Factor"] = ch1_factor;
+                        row["Salario"] = sh;
+                        double salario_factor = (sh * ch1_factor) / 100;
+                        row["SalarioFraccion"] = salario_factor;
+                        row["Monto"] = Math.Round((salario_factor * horas_extras), 2, MidpointRounding.AwayFromZero);
+                        DtHorasExtras.Rows.Add(row);
+                        run = false;
+                    }
+
+                    // Condiciones de Segundo Nivel.
+                    if (run)
+                    {
+                        TimeSpan het1 = item.RecordTime - ch1_date2;
+                        if (het1 >= ch2)
+                        {
+                            DataRow row = DtHorasExtras.NewRow();
+                            row["UserId"] = item.IdUser;
+                            row["UserName"] = item.IdUserNavigation.Name;
+                            row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference; 
+                            row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                            double horas_extras = Math.Round((het1.TotalMinutes / 60), 2, MidpointRounding.AwayFromZero);
+                            row["HorasExtras"] = horas_extras;
+                            row["Factor"] = ch2_factor;
+                            row["Salario"] = sh;
+                            double salario_factor = (sh * ch2_factor) / 100;
+                            row["SalarioFraccion"] = salario_factor;
+                            row["Monto"] = Math.Round((salario_factor * horas_extras), 2, MidpointRounding.AwayFromZero);
+                            DtHorasExtras.Rows.Add(row);
+                            run = true;
+                        }
+                        else
+                        {
+                            DataRow row = DtHorasExtras.NewRow();
+                            row["UserId"] = item.IdUser;
+                            row["UserName"] = item.IdUserNavigation.Name;
+                            row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference;
+                            row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                            double horas_extras = Math.Round((het1.TotalMinutes / 60), 2, MidpointRounding.AwayFromZero);
+                            row["HorasExtras"] = horas_extras;
+                            row["Factor"] = ch2_factor;
+                            row["Salario"] = sh;
+                            double salario_factor = (sh * ch2_factor) / 100;
+                            row["SalarioFraccion"] = salario_factor;
+                            row["Monto"] = Math.Round((salario_factor * horas_extras), 2, MidpointRounding.AwayFromZero);
+                            DtHorasExtras.Rows.Add(row);
+                            run = false;
+                        }
+                    }
+
+                    // Condiciones de Tercer Nivel.
+                    if (run)
+                    {
+                        TimeSpan het2 = item.RecordTime - ch3_date1;
+                        if (het2 >= ch2)
+                        {
+                            DataRow row = DtHorasExtras.NewRow();
+                            row["UserId"] = item.IdUser;
+                            row["UserName"] = item.IdUserNavigation.Name;
+                            row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference;                            row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                            row["HorasExtras"] = (ch2.TotalMinutes / 60);
+                            row["Factor"] = ch3_factor;
+                            row["Salario"] = sh;
+                            row["SalarioFraccion"] = (sh * ch3_factor) / 100;
+                            DtHorasExtras.Rows.Add(row);
+                            run = true;
+                        }
+                        else
+                        {
+                            DataRow row = DtHorasExtras.NewRow();
+                            row["UserId"] = item.IdUser;
+                            row["UserName"] = item.IdUserNavigation.Name;
+                            row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference;
+                            row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                            row["HorasExtras"] = Math.Round((het2.TotalMinutes / 60), 2, MidpointRounding.AwayFromZero);
+                            row["Factor"] = ch3_factor;
+                            row["Salario"] = sh;
+                            row["SalarioFraccion"] = (sh * ch3_factor) / 100;
+                            DtHorasExtras.Rows.Add(row);
+                            run = false;
+                        }
+                    }
+
+                }
+
+
+
+
+
+
+            }
+        }
         public int ObtenerHorarioEmpleado(int userid)
         {
             SqlCommand comando = new()
@@ -147,6 +363,25 @@ namespace DataFlowRRHH.Service
 
 
             
+        }
+        public string GetDepartamento(int userid)
+        {
+            SqlCommand comando = new()
+            {
+                Connection = micomm,
+                CommandType = CommandType.Text,
+
+                CommandText =
+            "SELECT b.description FROM [BDBioAdminSQL].[dbo].[User] a " +
+            "LEFT JOIN [BDBioAdminSQL].[dbo].[Department] b ON a.IdDepartment = b.IdDepartment " +
+            "WHERE a.IdUser=@p1"
+            };
+            SqlParameter p1 = new("@p1", userid);
+            comando.Parameters.Add(p1);
+            micomm.Open();
+            string result = Convert.ToString(comando.ExecuteScalar())!;
+            micomm.Close();
+            return result;
         }
     }
 }
