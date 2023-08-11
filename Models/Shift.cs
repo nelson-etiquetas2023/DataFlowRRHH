@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace DataFlowRRHH.Models;
+﻿namespace DataFlowRRHH.Models;
 
 public partial class Shift
 {
@@ -17,5 +13,7 @@ public partial class Shift
     public int? CuttingMinute { get; set; }
 
     public int? Cycle { get; set; }
+    public virtual ICollection<ShiftDetail> UserShiftDetailsNavigation { get; set; } = new List<ShiftDetail>();
+
 
 }

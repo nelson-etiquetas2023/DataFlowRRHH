@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace DataFlowRRHH.Models;
 
 public partial class BdbioAdminSqlContext : DbContext
 {
-    
+
     public BdbioAdminSqlContext(DbContextOptions<BdbioAdminSqlContext> options)
         : base(options)
     {
@@ -26,7 +24,7 @@ public partial class BdbioAdminSqlContext : DbContext
 
     public virtual DbSet<UserShift> UserShifts { get; set; }
 
-   
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Latin1_General_CI_AS");

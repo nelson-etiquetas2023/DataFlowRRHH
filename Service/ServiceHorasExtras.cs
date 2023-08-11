@@ -1,10 +1,6 @@
 ﻿using DataFlowRRHH.Models;
 using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Win32;
 using System.Data;
-using System.Data.SqlClient;
-using System.Reflection;
 
 
 namespace DataFlowRRHH.Service
@@ -13,6 +9,7 @@ namespace DataFlowRRHH.Service
     {
         public DataTable DtHorasExtras = new();
         public SqlConnection micomm;
+
         public ServiceHorasExtras()
         {
             micomm = new SqlConnection
@@ -21,7 +18,7 @@ namespace DataFlowRRHH.Service
             };
         }
 
-        public List<Jornada> RunReportCompleteHorasExtras(List<CamposRegistros> listaponches) 
+        public List<Jornada> RunReportCompleteHorasExtras(List<CamposRegistros> listaponches)
         {
             TimeSpan Entrada_Horario = new(18, 0, 0);
             TimeSpan Salida_Horario = new(6, 0, 0);
@@ -36,21 +33,32 @@ namespace DataFlowRRHH.Service
                                              q.RecordTime.AddHours(15).Date :
                                              q.RecordTime.Date
                             } into grp
-                            select new Jornada {
+                            select new Jornada
+                            {
                                 IdUser = grp.Key.IdUser,
-                                Empleado = grp.FirstOrDefault()!.NameUser ,
+                                Empleado = grp.FirstOrDefault()!.NameUser,
                                 Fecha = grp.FirstOrDefault()!.RecordTime,
                                 Mark1 = Convert.ToString(grp.FirstOrDefault()!.RecordTime.ToShortTimeString()),
                                 Mark2 = grp.Count() > 1 ? Convert.ToString(grp.ElementAtOrDefault(1)!.RecordTime.ToShortTimeString()) : "",
                                 Mark3 = grp.Count() > 2 ? Convert.ToString(grp.ElementAtOrDefault(2)!.RecordTime.ToShortTimeString()) : "",
                                 Mark4 = grp.Count() > 3 ? Convert.ToString(grp.ElementAtOrDefault(3)!.RecordTime.ToShortTimeString()) : "",
                                 Ponches = grp.Count(),
-                                Horas_Jornada = (grp.LastOrDefault()!.RecordTime - grp.FirstOrDefault()!.RecordTime)
+                                Horas_Jornada = (grp.LastOrDefault()!.RecordTime - grp.FirstOrDefault()!.RecordTime),
+                                Type_shift = grp.FirstOrDefault()!.Type_Shift,
+                                ShiftName = grp.FirstOrDefault()!.ShiftName,
+                                Start_journal = grp.FirstOrDefault()!.Start_journal,
+                                End_journal = grp.FirstOrDefault()!.End_journal,
                             }).ToList();
+
+
             return jornadas;
         }
 
-        public void RunReportDetailsHorasExtras(List<Record> listaponches) 
+
+
+
+
+        public void RunReportDetailsHorasExtras(List<Record> listaponches)
         {
             if (listaponches == null)
             {
@@ -75,7 +83,7 @@ namespace DataFlowRRHH.Service
                 int shiftf = she.ObtenerHorarioEmpleado(userid);
                 int indexday = Convert.ToInt16(item.RecordTime.DayOfWeek - 1);
                 if (indexday == -1) indexday = 6;
-                string dia = item.RecordTime.ToString("dddd");
+                item.RecordTime.ToString("dddd");
                 //Parametros de los horarios
                 ShiftAssingEmployeeRow hfp = she.ObtenerParametrosHorarios(shiftf, indexday);
                 //guarde la jornada en external reference.
@@ -113,7 +121,7 @@ namespace DataFlowRRHH.Service
 
                     // Condiciones del primer nivel.
                     if (het >= ch1)
-                    { 
+                    {
                         DataRow row = DtHorasExtras.NewRow();
                         row["UserId"] = item.IdUser;
                         row["UserName"] = item.IdUserNavigation.Name;
@@ -159,7 +167,7 @@ namespace DataFlowRRHH.Service
                             row["UserId"] = item.IdUser;
                             row["UserName"] = item.IdUserNavigation.Name;
                             row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
-                            row["Jornada"] = item.IdUserNavigation.ExternalReference; 
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference;
                             row["FechaMarca"] = item.RecordTime.ToShortDateString();
                             double horas_extras = Math.Round((het1.TotalMinutes / 60), 2, MidpointRounding.AwayFromZero);
                             row["HorasExtras"] = horas_extras;
@@ -201,7 +209,7 @@ namespace DataFlowRRHH.Service
                             row["UserId"] = item.IdUser;
                             row["UserName"] = item.IdUserNavigation.Name;
                             row["Departamento"] = item.IdUserNavigation.IdDepartmentNavigation.Description;
-                            row["Jornada"] = item.IdUserNavigation.ExternalReference;                            row["FechaMarca"] = item.RecordTime.ToShortDateString();
+                            row["Jornada"] = item.IdUserNavigation.ExternalReference; row["FechaMarca"] = item.RecordTime.ToShortDateString();
                             row["HorasExtras"] = (ch2.TotalMinutes / 60);
                             row["Factor"] = ch3_factor;
                             row["Salario"] = sh;
@@ -278,7 +286,7 @@ namespace DataFlowRRHH.Service
             da.SelectCommand = comando;
             da.Fill(dt);
             // validar que tenga registros.
-            if (dt.Rows.Count > 0) 
+            if (dt.Rows.Count > 0)
             {
                 hfp.Jornada_Start = dt.Rows[0]["t2inhour"].ToString()!;
                 hfp.Jornada_End = dt.Rows[0]["t2outhour"].ToString()!;
@@ -348,21 +356,22 @@ namespace DataFlowRRHH.Service
 
             List<ShifthAssingEmployeeDetails> horarios;
 
-            horarios = dt.AsEnumerable().Select(x => new ShifthAssingEmployeeDetails {
+            horarios = dt.AsEnumerable().Select(x => new ShifthAssingEmployeeDetails
+            {
                 IdUser = x.Field<int>("IdUser"),
                 Description = x.Field<string>("Description")!,
                 Name = x.Field<string>("Name")!,
                 UserShiftId = x.Field<int>("UserShiftId"),
                 ShiftId = x.Field<int>("ShiftId"),
-                HourSalary = x.Field<decimal>("HourSalary") 
+                HourSalary = x.Field<decimal>("HourSalary")
             }).ToList();
 
             return horarios;
-            
 
 
 
-            
+
+
         }
         public string GetDepartamento(int userid)
         {

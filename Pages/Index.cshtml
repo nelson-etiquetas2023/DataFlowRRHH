@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row pt-4">
         <div class="col6">
-            <h2 class="text-primary">Registro de Asistencia Empleados.</h2>
+            <h2 class="text-primary">GESTION HUMANA.</h2>
         </div>
         <!--Cuadro de Parametros de Fecha-->
         <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
@@ -18,51 +18,12 @@
                 Fecha desde: <input class="form-control" asp-for="ToDate" />
                 Fecha hasta: <input class="form-control" asp-for="FromDate" />
                 <br />
-                <button class="btn btn-primary" type="submit">Cargar Datos</button>
+                <button class="btn btn-primary" type="submit"><i class="bi bi-cloud-download"></i> Cargar Datos</button>
                 <br />
             </form>
         </div>
-        <!--Cuadro de Profile de Empleadp-->
-        <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px;margin-left:5px;overflow-y: scroll;height:300px">
-            <strong>Profile del Empleado:</strong>
-            <!--Textbox de busqueda de empleado-->
-           <form method="get">
-                <input type="text" placeholder="Introduzca Id Usuario..." class="form-control my-2" value="@Model.IdEmployee" asp-for="@Model.IdEmployee" asp-route-id="@Model.IdEmployee" />
-                <button class="btn btn-primary my-2" asp-page-handler="SearchProfileEmployee" type="submit">Buscar Datos Usuario</button>
-           </form>
-            
-            <div class="list-group">
-                <!--Lista de Horarios de Empleado-->
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">NOMBRE: @Model.NameEmployee</h5>
-                    </div>
-                </a>
-                @foreach(var item in Model.HorariosAsignados){
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">@item.Nombre</h5>
-                        </div>
-                        <p class="mb-1">Comienza: @item.Date_Start</p>
-                        <p class="mb-1">Termina : @item.Date_Finish</p>
-                    </a>   
-                }
-                <!--Cuadro de datos de empleado como sueldo y departamento-->
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Salario Hora:
-                        <span class="badge bg-primary rounded-pill">@Model.Salario</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Departamento :
-                        <span class="badge bg-primary rounded-pill">@Model.Departamento</span>
-                    </li>
-
-                </ul>
-            </div>
-        </div>
-        <br/>
         <!--Tabla de registros de ponches-->
+        <h1>Marcaje de Empleados</h1>
         <table id="TablePonches" class="cell-border compact stripe nowrap">
             <!--Encabezado de la tabla-->
             <thead>
@@ -75,7 +36,7 @@
                     <th>Nombre del Dispositivo</th>
                     <th>Id Dpto.</th>
                     <th>Departamento</th>
-                    <th>Tipo Horario</th>
+                    <th>Index day</th>
 
                 </tr>
             </thead>  
@@ -110,7 +71,7 @@
                             @item.DepartmentName
                         </td>
                         <td>
-                            @item.Type_Shift
+                            @item.Indexday
                         </td>
                     </tr>
                 }  
@@ -118,12 +79,18 @@
         </table>
     </div>
     <!-- Cuadro de las Horas Extras. -->
-    <div class="row">
+    <div class="row" style="margin-bottom:10px">
         <div class="col-md-12">
             <h1>Horas Extras Empleados</h1>
-            <button class="btn btn-primary">Calcular</button>
-            <button class="btn btn-info">Reporte</button>
-            <button class="btn btn-danger">Exportar</button>
+            <form method="post"> 
+                <button type="submit" class="btn btn-danger" asp-page-handler="RunReports"><i class="bi bi-printer"></i> Reporte</button>
+                <input type="radio" name="FormatoDoc" value="pdf" id="FormatoDoc" checked asp-for="FormatoDoc" /><label> Pdf</label>
+                <input type="radio" name="FormatoDoc" value="excel" id="FormatoDoc" asp-for="FormatoDoc" /><label> Excel</label>
+                <input type="radio" name="FormatoDoc" value="word" id="FormatoDoc" asp-for="FormatoDoc" /><label> Word</label>
+            </form>
+            
+           
+            
         </div/>
     </div>
 </div>
@@ -132,7 +99,7 @@
      <div class="row">
             <!-- Cuadro de horas extras -->
             
-            <table id="TableHorasExtras" class="table table-bordered table-striped table-hover" style="margin-top:10px">
+            <table id="TableHorasExtras" class="table table-bordered table-striped table-hover  compact nowrap" style="margin-top:10px">
                 <!--Encabezado de la tabla-->
                 <thead>
                     <tr>
@@ -140,18 +107,23 @@
                         <th>Id. Emp.</th>
                         <th>Nombre Empleado</th>
                         <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
                         <th>M1</th>
                         <th>M2</th>
                         <th>M3</th>
                         <th>M4</th>
                         <th>Registros</th>
                         <th>Total Horas</th>
+                        <th>Horas Extras</th>
+
                         
                     </tr>
                 </thead> 
                 <tbody>
                 @{int row = 0;}
-                @foreach(var item in Model.jornadas)
+                @foreach(var item in Model.Jornadas)
                 {
                     row += 1;
                     <tr>
@@ -166,6 +138,15 @@
                         </td>
                         <td>
                             @item.Fecha.ToShortDateString()    
+                        </td>
+                        <td>
+                            @item.ShiftName    
+                        </td>
+                        <td>
+                            @item.Start_journal
+                        </td>
+                          <td>
+                            @item.End_journal
                         </td>
                         <td>
                             @item.Mark1 
@@ -185,7 +166,9 @@
                         <td>
                             @item.Horas_Jornada
                         </td>
-                    
+                        <td>
+                            he
+                        </td>
                     </tr>
                 }  
             </tbody>

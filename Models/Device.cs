@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DataFlowRRHH.Models;
+﻿namespace DataFlowRRHH.Models;
 
 public partial class Device
 {

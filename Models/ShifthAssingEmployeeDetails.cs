@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace DataFlowRRHH.Models
+﻿namespace DataFlowRRHH.Models
 {
     public class ShifthAssingEmployeeDetails
     {
@@ -8,7 +6,7 @@ namespace DataFlowRRHH.Models
         public int UserShiftId { get; set; } = 0;
         public int ShiftId { get; set; } = 0;
         public string Description { get; set; } = "";
-        public string Name{ get; set; } = "";
+        public string Name { get; set; } = "";
         public decimal HourSalary { get; set; } = 0;
     }
 }

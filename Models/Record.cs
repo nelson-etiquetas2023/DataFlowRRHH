@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataFlowRRHH.Models;
 
@@ -32,5 +30,5 @@ public partial class Record
 
     [ForeignKey("MachineNumber")]
     public virtual Device IdDeviceNavigation { get; set; } = null!;
-    
+
 }
