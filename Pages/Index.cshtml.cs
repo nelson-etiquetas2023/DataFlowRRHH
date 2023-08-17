@@ -2,16 +2,14 @@
 using DataFlowRRHH.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace DataFlowRRHH.Pages
 {
     public class IndexModel : PageModel
     {
-        readonly BdbioAdminSqlContext db;
-        public List<CamposRegistros> ListaPonches { get; set; } = new List<CamposRegistros>();
-
         [BindProperty(SupportsGet = true), DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ToDate { get; set; }
 
@@ -36,89 +34,41 @@ namespace DataFlowRRHH.Pages
         public string Departamento { get; set; } = "";
 
         [BindProperty]
-        public List<ShiftAssigned> HorariosAsignados { get; set; } = new List<ShiftAssigned>();
+        public List<CamposRegistros> ListaPonches { get; set; } = new List<CamposRegistros>();
+
 
         [BindProperty]
+        public List<ShiftAssigned> HorariosAsignados { get; set; } = new List<ShiftAssigned>();
+
+        [BindProperty(SupportsGet = true)]
         public List<Jornada> Jornadas { get; set; } = new List<Jornada>();
-        public ServiceHorasExtras Service { get; set; }
+
+        private List<CampoHorasExtras> FileReportHorasExtras { get; set; } = new();
+
+        public IServiceGestion ServiceGestion { get; set; }
 
 
         //checkbox de los formatos de reporte.
         [BindProperty]
         public string FormatoDoc { get; set; } = "pdf";
-       
 
 
-        public IndexModel(BdbioAdminSqlContext _db)
+
+        public IndexModel(IServiceGestion _ServiceGestion)
         {
-
-
             ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
             FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
-            this.db = _db;
-            Service = new ServiceHorasExtras();
+            ServiceGestion = _ServiceGestion;
         }
 
         public async Task OnGetAsync()
         {
+            //query de registro de huellas de empleados.
+            ListaPonches = await ServiceGestion.LoadRegistroMarcasHuellasEmpleados(ToDate, FromDate);
 
-            //1.-query de ponches
-            var ponches = db.Records
-            .Select(p => new
-            {
-                p.IdUser,
-                NameUser = p.IdUserNavigation.Name,
-                p.RecordTime,
-                indexday = Convert.ToInt32(p.RecordTime.DayOfWeek - 1) == -1 ? 6 : Convert.ToInt32(p.RecordTime.DayOfWeek - 1),
-                p.IdUserNavigation.IdDepartmentNavigation.IdDepartment,
-                DepartmentName = p.IdUserNavigation.IdDepartmentNavigation.Description,
-                p.IdDeviceNavigation.IdDevice,
-                p.IdUserNavigation.UserShiftNavigation,
-                DeviceName = p.IdDeviceNavigation.Description,
-                Horario = p.IdUserNavigation.UserShiftNavigation
-               .Select(g => new
-               {
-                   id = g.ShiftId,
-                   g.ShiftNavigation.Description,
-                   g.BeginDate,
-                   g.EndDate,
-               })
-               .Where(t => p.RecordTime >= t.BeginDate && p.RecordTime <= t.EndDate)
-               .Select(w => new
-               {
-                   iddshift = w.id ?? 0,
-                   shiftname = w.Description,
-                   type_Shift = w.Description!.Contains("Nocturno") ? "N" : "D",
-                   start_journal = db.ShiftDetails.Where(x => x.ShiftId == w.id && x.DayId == 0).Select(x => x.T2inHour).FirstOrDefault(),
-                   end_journal = db.ShiftDetails.Where(x => x.ShiftId == w.id && x.DayId == 0).Select(x => x.T2outHour).FirstOrDefault()
-               })
-
-            }).Select(x => new CamposRegistros
-            {
-                IdUser = x.IdUser,
-                NameUser = x.NameUser,
-                RecordTime = x.RecordTime,
-                IdDepartment = x.IdDepartment,
-                DepartmentName = x.DepartmentName,
-                IdDevice = x.IdDevice,
-                IdShift = x.Horario.Select(x => x.iddshift).SingleOrDefault(),
-                DeviceName = x.DeviceName,
-                Type_Shift = x.Horario.Select(g => g.type_Shift).FirstOrDefault()!,
-                ShiftName = x.Horario.Select(g => g.shiftname).FirstOrDefault()!,
-                Indexday = x.indexday,
-                Start_journal = x.Horario.Select(g => g.start_journal).FirstOrDefault(),
-                End_journal = x.Horario.Select(g => g.end_journal).FirstOrDefault(),
-            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate);
-
-            ListaPonches = await ponches.ToListAsync();
             //calculo de las horas extras.
-            Jornadas = Service.RunReportCompleteHorasExtras(ListaPonches);
-
-
-
-
+            Jornadas = ServiceGestion.RunReportCompleteHorasExtras(ListaPonches);
         }
-
 
         public async Task<FileContentResult> OnPostRunReports()
         {
@@ -130,38 +80,76 @@ namespace DataFlowRRHH.Pages
 
             if (FormatoDoc == "pdf")
             {
-                url = "http://192.168.10.13:8085/api/Report/UserDetails/pdf/en";
+
+                url = "https://localhost:5001/api/ReporteHorasExtras/reporthe/pdf";
                 typeFile = "application/pdf";
                 nameFile = "Reporte.pdf";
 
             }
             if (FormatoDoc == "excel")
             {
-                url = "http://192.168.10.13:8085/api/Report/UserDetails/xls/en";
+                url = "https://localhost:5001/api/ReporteHorasExtras/reporthe/xls";
                 typeFile = "application/xls";
                 nameFile = "Reporte.xls";
 
             }
             if (FormatoDoc == "word")
             {
-                url = "http://192.168.10.13:8085/api/Report/UserDetails/word/en";
+                url = "https://localhost:5001/api/ReporteHorasExtras/reporthe/word";
                 typeFile = "application/word";
                 nameFile = "Reporte.doc";
-
             }
-            //Consumir la api.
-            using HttpClient client = new();
-            HttpResponseMessage response = await client.GetAsync(url);
+
+            //Consultas de horas extras.
+            ListaPonches = await ServiceGestion.LoadRegistroMarcasHuellasEmpleados(ToDate, FromDate);
+            Jornadas = ServiceGestion.RunReportCompleteHorasExtras(ListaPonches);
+
+
+            foreach (var item in Jornadas)
+            {
+
+                double horas_extras = Convert.ToDouble(((DateTime)(item.Mark4_Dt == null ? item.Horario_salida : item.Mark4_Dt) - (DateTime)item.Horario_salida).TotalHours);
+                double salarioHora = ServiceGestion.ObtenerSalarioxHora(item.IdUser);
+
+                //string format = @"h\:mm\:ss";
+                //TimeSpan time_start = TimeSpan.Parse(TimeString);
+                //TimeSpan.TryParseExact(TimeString,format,CultureInfo.InvariantCulture,out time_start);
+                //int hour = Convert.ToInt16(item.Mark1.Substring(1, 2));
+                //int minutes = Convert.ToInt16(item.Mark1.Substring(4, 2));
+                //int seconds = 0;
+                //DateTime marca_entrada = new(year, month, day, hour, minutes, seconds);
+                FileReportHorasExtras.Add(new CampoHorasExtras
+                {
+                    UserId = item.IdUser.ToString(),
+                    UserName = item.Empleado,
+                    Departamento = item.Dpto,
+                    Fecha_Marcaje = item.Fecha,
+                    Horario_Asignado = item.ShiftName,
+                    Hora_Entrada = item.Start_journal.ToString(),
+                    Hora_Salida = item.End_journal.ToString(),
+                    M1 = item.Mark1,
+                    M2 = item.Mark2,
+                    M3 = item.Mark3,
+                    M4 = item.Mark4,
+                    Horas_trabajadas = item.Horas_Jornada,
+                    Horas_Extras = horas_extras,
+                    Salario = salarioHora,
+                    Marcas = item.Ponches
+                });
+            }
+
+            //consumir la api de reportes.
+
+            var client = new HttpClient();
+            var json = JsonConvert.SerializeObject(FileReportHorasExtras);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(url, content);
             response.EnsureSuccessStatusCode();
             byte[] responseBody = await response.Content.ReadAsByteArrayAsync();
+
             return File(responseBody, typeFile, nameFile);
         }
     }
-
-
-
-
-
     public class ShiftAssigned
     {
         public string Nombre { get; set; } = null!;

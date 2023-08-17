@@ -1,5 +1,7 @@
 using DataFlowRRHH.Models;
+using DataFlowRRHH.Service;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<BdbioAdminSqlContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
+builder.Services.AddScoped<IServiceGestion, ServiceGestion>();
 
 var app = builder.Build();
 

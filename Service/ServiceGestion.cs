@@ -1,29 +1,93 @@
 ﻿using DataFlowRRHH.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-
 
 namespace DataFlowRRHH.Service
 {
-    public class ServiceHorasExtras
+    public interface IServiceGestion
     {
+        Task<List<CamposRegistros>> LoadRegistroMarcasHuellasEmpleados(DateTime ToDate, DateTime FromDate);
+        List<Jornada> RunReportCompleteHorasExtras(List<CamposRegistros> listaponches);
+        double ObtenerSalarioxHora(int userid);
+    }
+    public class ServiceGestion : IServiceGestion
+    {
+        //conexion con entityframwork
+        public BdbioAdminSqlContext db;
+        public List<CamposRegistros> ListaPonches { get; set; } = new List<CamposRegistros>();
+
+        //Conexion con ado.net
         public DataTable DtHorasExtras = new();
         public SqlConnection micomm;
 
-        public ServiceHorasExtras()
+        public ServiceGestion(BdbioAdminSqlContext _db)
         {
+            db = _db;
             micomm = new SqlConnection
             {
                 ConnectionString = @"Data Source=SERVER-ETIQUETA;Initial Catalog=BDBioAdminSQL;User Id=Npino;Password=Jossycar5%;TrustServerCertificate=True;"
             };
-        }
 
+        }
+        public async Task<List<CamposRegistros>> LoadRegistroMarcasHuellasEmpleados(DateTime ToDate, DateTime FromDate)
+        {
+            //1.-query de ponches
+            var ponches = db.Records
+            .Select(p => new
+            {
+                p.IdUser,
+                NameUser = p.IdUserNavigation.Name,
+                p.RecordTime,
+                indexday = Convert.ToInt32(p.RecordTime.DayOfWeek - 1) == -1 ? 6 : Convert.ToInt32(p.RecordTime.DayOfWeek - 1),
+                p.IdUserNavigation.IdDepartmentNavigation.IdDepartment,
+                DepartmentName = p.IdUserNavigation.IdDepartmentNavigation.Description,
+                p.IdDeviceNavigation.IdDevice,
+                p.IdUserNavigation.UserShiftNavigation,
+                DeviceName = p.IdDeviceNavigation.Description,
+                Horario = p.IdUserNavigation.UserShiftNavigation
+               .Select(g => new
+               {
+                   id = g.ShiftId,
+                   g.ShiftNavigation.Description,
+                   g.BeginDate,
+                   g.EndDate,
+               })
+               .Where(t => p.RecordTime >= t.BeginDate && p.RecordTime <= t.EndDate)
+               .Select(w => new
+               {
+                   iddshift = w.id ?? 0,
+                   shiftname = w.Description,
+                   type_Shift = w.Description!.Contains("Nocturno") ? "N" : "D",
+                   start_journal = db.ShiftDetails.Where(x => x.ShiftId == w.id && x.DayId == 0).Select(x => x.T2inHour).FirstOrDefault(),
+                   end_journal = db.ShiftDetails.Where(x => x.ShiftId == w.id && x.DayId == 0).Select(x => x.T2outHour).FirstOrDefault()
+               })
+
+            }).Select(x => new CamposRegistros
+            {
+                IdUser = x.IdUser,
+                NameUser = x.NameUser,
+                RecordTime = x.RecordTime,
+                IdDepartment = x.IdDepartment,
+                DepartmentName = x.DepartmentName,
+                IdDevice = x.IdDevice,
+                IdShift = x.Horario.Select(x => x.iddshift).SingleOrDefault(),
+                DeviceName = x.DeviceName,
+                Type_Shift = x.Horario.Select(g => g.type_Shift).FirstOrDefault()!,
+                ShiftName = x.Horario.Select(g => g.shiftname).FirstOrDefault()!,
+                Indexday = x.indexday,
+                Start_journal = x.Horario.Select(g => g.start_journal).FirstOrDefault(),
+                End_journal = x.Horario.Select(g => g.end_journal).FirstOrDefault(),
+            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate);
+
+            return ListaPonches = await ponches.ToListAsync();
+        }
         public List<Jornada> RunReportCompleteHorasExtras(List<CamposRegistros> listaponches)
         {
-            TimeSpan Entrada_Horario = new(18, 0, 0);
-            TimeSpan Salida_Horario = new(6, 0, 0);
-
-            TimeSpan tsresult = Entrada_Horario.Subtract(Salida_Horario);
+            //hay que traer la entrada y salida del los horarios asignados.
+            //TimeSpan Entrada_Horario = new(18, 0, 0);
+            //TimeSpan Salida_Horario = new(6, 0, 0);
+            //TimeSpan tsresult = Entrada_Horario.Subtract(Salida_Horario);
 
             var jornadas = (from q in listaponches
                             group q by new
@@ -37,18 +101,27 @@ namespace DataFlowRRHH.Service
                             {
                                 IdUser = grp.Key.IdUser,
                                 Empleado = grp.FirstOrDefault()!.NameUser,
+                                Dpto = grp.FirstOrDefault()!.DepartmentName,
                                 Fecha = grp.FirstOrDefault()!.RecordTime,
+                                Horario_salida = new DateTime(grp.FirstOrDefault()!.RecordTime.Year,
+                                grp.FirstOrDefault()!.RecordTime.Month,
+                                grp.FirstOrDefault()!.RecordTime.Day, grp.FirstOrDefault()!.End_journal, 0, 0),
                                 Mark1 = Convert.ToString(grp.FirstOrDefault()!.RecordTime.ToShortTimeString()),
                                 Mark2 = grp.Count() > 1 ? Convert.ToString(grp.ElementAtOrDefault(1)!.RecordTime.ToShortTimeString()) : "",
                                 Mark3 = grp.Count() > 2 ? Convert.ToString(grp.ElementAtOrDefault(2)!.RecordTime.ToShortTimeString()) : "",
                                 Mark4 = grp.Count() > 3 ? Convert.ToString(grp.ElementAtOrDefault(3)!.RecordTime.ToShortTimeString()) : "",
+
+                                Mark1_Dt = grp.FirstOrDefault()!.RecordTime,
+                                Mark2_Dt = grp.ElementAtOrDefault(1)?.RecordTime,
+                                Mark3_Dt = grp.ElementAtOrDefault(2)?.RecordTime,
+                                Mark4_Dt = grp.ElementAtOrDefault(3)?.RecordTime,
                                 Ponches = grp.Count(),
                                 Horas_Jornada = Convert.ToDouble((grp.LastOrDefault()!.RecordTime - grp.FirstOrDefault()!.RecordTime).TotalHours),
                                 Type_shift = grp.FirstOrDefault()!.Type_Shift,
                                 ShiftName = grp.FirstOrDefault()!.ShiftName,
                                 Start_journal = grp.FirstOrDefault()!.Start_journal,
                                 End_journal = grp.FirstOrDefault()!.End_journal,
-                            }).ToList();
+                            }).OrderBy(o => o.IdUser).ToList();
 
 
             return jornadas;
@@ -228,14 +301,7 @@ namespace DataFlowRRHH.Service
                             run = false;
                         }
                     }
-
                 }
-
-
-
-
-
-
             }
         }
         public int ObtenerHorarioEmpleado(int userid)
