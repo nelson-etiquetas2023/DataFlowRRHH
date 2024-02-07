@@ -1,0 +1,996 @@
+﻿@page "{searchString?}"
+
+@model IndexModel
+@{
+    ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
+    int item_number = 0;
+}
+
+<!--Capa de los calendarios y feriados------------>
+<div class="container-fluid">
+    <div class="row">
+        <div class="container alert alert-dark my-4" role="alert" style="display:flex;">
+            <img src="images/gestion.jpeg" />
+            <div class="container" style="display:flex;flex-direction:column">
+                <p style="font-size:80px;font-family:'Black Ops One'" class="text-black">DataFlow</p>
+                <strong style="font-size:48px">Gestion Humana.</strong>
+                <strong>Desarrollado por Etiquetas.com</strong>
+                <strong>Departamento de Desarrollo: 829-695-1050</strong>
+            </div>
+        </div>
+         <!--Cuadro de Parametros de Fecha-->
+        <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
+               <div class="alert alert-success py-2 my-4" role="alert">
+                    <img src="images/date.png" style="margin-right:20px"/>
+                    <strong> Parametros de Fecha:</strong></div>
+            <form method="get" class="container" style="display:flex;flex-direction:column;justify-content:space-around">
+             
+                <strong>Fecha desde:</strong> <input class="form-control" asp-for="ToDate" />
+                <strong>Fecha hasta:</strong> <input class="form-control" asp-for="FromDate" />
+             
+                <button style="margin-top:26px" class="btn btn-primary" type="submit"><i class="bi bi-calendar3"></i> Cargar Datos</button>
+                
+            </form>
+        </div>
+         <!--Cuadro de feriados-->
+         <div class="col-3 border" style="margin-left:10px">
+            <div class="alert alert-success py-2 my-4" role="alert">
+                <img src="images/holidays.png" style="margin-right:20px"/>
+                <strong>Feriados y Excepciones:</strong></div>
+            <div class="container" style="display:flex;flex-direction:column;justify-content:space-around">
+                <p class="text-secondary">
+                    Haga click en el boton
+                    para ver el listado de 
+                    los dias Feriados y 
+                    las Excepciones creadas 
+                    en el programa bioadmin.
+                </p>
+                 <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-top:40px">
+                    <i class="bi bi-bell"></i> Ver Feriados
+                </button>
+            </div>            
+            <!-- Modal de los dias feriados-->
+            <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Dias Feriados y Excepciones.</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                     <table id="TableFeriado" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Id.
+                                </th>
+                                <th>
+                                    Fecha Inicio.
+                                </th>
+                                <th>
+                                    Fecha Final.
+                                </th>
+                                <th>
+                                    Descripcion
+                                </th>
+                                <th>
+                                    Recu.
+                                </th>
+                                <th>
+                                    Tipo
+                                </th>
+                                <th>
+                                    Factor
+                                </th>
+                                <th>
+                                    Dpto
+                                </th>
+                                <th>
+                                    Empleado
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model.Feriados)
+                            {
+                                 <tr>
+                                    <td>
+                                        @item.Id
+                                    </td>           
+                                    <td>
+                                        @item.DateStart
+                                    </td>           
+                                    <td>
+                                        @item.DateEnd
+                                    </td> 
+                                    <td>
+                                        @item.Description
+                                    </td>
+                                    <td>
+                                        @item.Recurrente
+                                    </td>
+                                    <td>
+                                        @item.Type
+                                    </td>
+                                    <td>
+                                        @item.Factor
+                                    </td>
+                                     <td>
+                                        @item.Depart
+                                    </td>
+                                    <td>
+                                        @item.Employee
+                                    </td>
+                                 </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>                 
+                </div>
+              </div>
+            </div>
+
+        </div>
+        <!--Cuadro de Impresion-->
+         <div class="col-3 border" style="margin-left:10px">
+            <div class="alert alert-success py-2 my-4" role="alert">
+                <img src="images/process.png" style="margin-right:20px"/>
+                <strong>Imprimir y Exportar:</strong></div>
+            <strong>Seleccione el tipo de Documento:</strong>
+            <!--Fourmulario de reportes-->
+            <form method="post" class="container my-4" style="display:flex; flex-direction:column;justify-content:space-around">
+                <div class="form-check">
+                     <input class="form-check-input" name="FormatoDoc" value="pdf" type="radio" id="FormatoDoc" checked asp-for="FormatoDoc">
+                     <label class="form-check-label" for="FormatoDoc">
+                        Ver en <strong>Pdf.</strong>
+                     </label>
+                </div>
+                <div class="form-check">
+                        <input class="form-check-input" name="FormatoDoc" type="radio" value="excel" id="FormatoDoc"asp-for="FormatoDoc">
+                        <label class="form-check-label" for="FormatoDoc">
+                            Exportar a <strong>Excel.</strong>
+                        </label>
+                </div>
+                <div class="form-check">
+                        <input class="form-check-input" name="FormatoDoc" type="radio" value="word"  id="FormatoDoc" asp-for="FormatoDoc">
+                        <label class="form-check-label" for="FormatoDoc">
+                            Exportar a <strong>Word.</strong>
+                        </label>
+                </div>
+                <button type="submit" class="btn btn-primary" asp-page-handler="RunReports"  style="margin-top:25px"><i class="bi bi-printer"></i> Imprimir</button>
+            </form>
+             
+             
+        </div>
+    </div> 
+</div>
+<!--fin de la capa de los calendarios y feriados-->
+<!------------------------------------------------>
+
+<!--DataTable Calculo de Horas Extras------------->
+<div class="container-fluid">
+    <div class="row">
+        <!--Barra de Herramientas de Opciones de Horas Extras-->
+        <div class="col-12 py-4">
+            <div class="alert alert-dark" role="alert" style="display:flex;align-items:center">
+                  <img src="images/calculator.png" style="width:50px;height:50px;margin-right:20px"/>
+                 <h1>Horas Extras Empleados</h1>
+                     <span class="badge bg-secondary" style="margin-left:20px"> Feriado </span> <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightgreen"></div>
+                     <span class="badge bg-secondary" style="margin-left:20px"> Dia Libre </span>
+                     <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightRed"></div> 
+                  <span class="badge bg-secondary" style="margin-left:20px"> Domingos </span>
+                  <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="yellowforce"></div> 
+            </div>
+         </div/>
+    </div>
+    <!--Fin de la Barra de Herramientas-->
+    <!----------------------------------->
+
+    <!-- Datatable Cuadro de horas extras -->
+    <div class="row">
+        <div class="col-12">
+            <table id="TableHorasExtras" class="table table-striped nowrap" style="width:100%;margin-top:10px">
+                <!--Encabezado de la tabla-->
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Id.</th>
+                        <th>Empleado</th>
+                        <th>Dia</th>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Ent</th>
+                        <th>Sal</th>
+                        <th>M1</th>
+                        <th>M2</th>
+                        <th>M3</th>
+                        <th>M4</th>
+                        <th>Pon</th>
+                        <th>T.Horas</th>
+                        <th>Hor 35%</th>
+                        <th>Feriado</th>
+                        <th>Libre</th>
+                        <th>Sueldo H.</th>
+                        <th>Factor</th>
+                        <th>Fr. Sueldo</th>
+                        <th>Mon 35%</th>
+                        <th>Hor 100%</th>
+                        <th>Mon 100</th>
+
+
+                    </tr>
+                </thead> 
+                <tbody>
+                @{int row = 0;}
+                @foreach(var item in Model.Jornadas)
+                {
+                    row += 1;
+                    <tr>
+                        <td>
+                            @row
+                        </td>
+                        <td>
+                            @item.IdUser
+                        </td>
+                        <td>
+                            @item.Empleado
+                        </td>
+                        <td>
+                            @item.DiaSemana
+                        </td>
+                        <td>
+                            @item.Fecha.ToString("dd/MM/yyyy")    
+                        </td>
+                        <td>
+                            @item.ShiftName    
+                        </td>
+                        <td>
+                            @item.ShiftStart
+                        </td>
+                          <td>
+                            @item.ShiftEnd
+                        </td>
+                        <td>
+                            @item.Mark1 
+                        </td>
+                        <td>
+                            @item.Mark2 
+                        </td>
+                        <td>
+                            @item.Mark3 
+                        </td>
+                        <td>
+                            @item.Mark4 
+                        </td>
+                        <td>
+                            @item.Ponches
+                        </td>
+                        <td>
+                            @Math.Round(item.Horas_Jornada,2,MidpointRounding.AwayFromZero)
+                        </td>
+                        <td>
+                            @item.Horas_Extras
+                        </td>
+                        <td>
+                           @item.Feriado
+                        </td>
+                        <td>
+                            @item.DayFree
+                        </td>
+                        <td>
+                            @item.sueldo_hora
+                        </td>
+                        <td>
+                            @item.factor
+                        </td>
+                        <td>
+                            @item.fr_sueldo
+                        </td>
+                        <td>
+                            @item.MontoHeDiario
+                        </td>
+                        <td>@item.horas100</td>
+                        <td>@item.Montoal100</td>
+                    </tr>
+                }  
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <!--Fin del Datatables de Horas Extras-->        
+    <!-------------------------------------->
+</div>
+<!--Fin de la Capa de Horas Extras y Opciones---->
+<!----------------------------------------------->     
+        
+<!-- Datatable de Listado de Ponches Empleados--->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-dark my-4" role="alert" style="display:flex;align-items:center">
+                 <img src="images/fingerprint.png" style="width:50px;height:50px;margin-right:20px"/>
+                 <h1>Ponche de Empleados.</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table id="TablePonches" class="table table-bordered cell-border compact nowrap">
+            <!--Encabezado de la tabla-->
+            <thead>
+                <tr>
+                    <th>It.</th>
+                    <th>Id. Emp</th>
+                    <th>Nombre del Empleado</th>
+                    <th>Fecha y Hora Marca</th>
+                    <th>Id Dev.</th>
+                    <th>Nombre del Dispositivo</th>
+                    <th>Id Dpto.</th>
+                    <th>Departamento</th>
+                   
+
+                </tr>
+            </thead>  
+            <!--Detalle de tabla-->
+            @* <tbody>
+                @foreach(var item in Model.ListaPonches)
+                {
+                    item_number += 1;
+                    <tr>
+                        <td>
+                            @item_number
+                        </td>
+                        <td>
+                            @item.IdUser
+                        </td>
+                        <td>
+                            @item.NameUser
+                        </td>
+                        <td>
+                            @item.RecordTime
+                        </td>
+                        <td>
+                            @item.IdDevice
+                        </td>
+                        <td>
+                            @item.DeviceName
+                        </td>
+                        <td>
+                            @item.IdDepartment
+                        </td>
+                        <td>
+                            @item.DepartmentName
+                        </td>
+                    </tr>
+                }  
+            </tbody> *@
+        </table>
+        </div>
+    </div>
+</div>
+<!--Fin datatable de ponches de empleados-------->
+<!----------------------------------------------->
+
+ <!-- Modal de los detalle pago empleado-->
+<div class="modal" id="modalEmploDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detalle pago de horas extras por Empleado.</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               
+            </div>
+             <h5 class="idemplo" style="padding-left:10px;margin-top:30px"></h5>
+             <h5 class="nameEmplo" style="padding-left:10px"></h5>
+            <div class="modal-body">
+                <table id="dtEmploDetails" class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                It.
+                            </th>
+                            <th>
+                                Fecha
+                            </th>
+                            <th>
+                                Horas Extras
+                            </th>
+                            <th>
+                                Monto Pesos
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                   
+                </table>
+                <h5 class="valHorasExtras" style="padding-left:10px;margin-top:30px"></h5>
+                <h5 class="valMontoTotal" style="padding-left:10px"></h5>
+            </div>   
+            <div class="modal-footer">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            //Funciones necesarias.
+            
+              function addCell(tr, content, colSpan = 1) {
+                let td = document.createElement("th");
+                td.colSpan = colSpan;
+                td.innerText = content;
+                tr.appendChild(td);
+              }
+              function getDataSrc(dt) {
+                // Return the RowGroup dataSrc
+                //var dataSrc = dt.rowGroup().dataSrc();
+                var dataSrc = 1;
+
+                // If multi level use only the first level
+                if (Array.isArray(dataSrc)) {
+                  dataSrc = dataSrc[0];
+                }
+                return dataSrc;
+              }
+              function updateSheet1(xlsx, groupName, title, button, dt) {
+                // console.log('updateSheet', groupName);
+                // Get number of columns to remove last hidden index column.
+                var numColumns = dt.columns().header().count();
+                var newSheet =
+                  '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+                  '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac" mc:Ignorable="x14ac">' +
+                  getTableData(groupName, title, button, dt) +
+                  "</worksheet>";
+
+                // Get sheet.
+                var sheet = (xlsx.xl.worksheets["sheet1.xml"] = $.parseXML(newSheet));
+             
+
+                // if (Array.isArray(groupName)) {
+                //   setSheetName(
+                //     xlsx,
+                //     button.sheetName
+                //       ? button.sheetName
+                //       : document.getElementsByTagName("title")[0].innerHTML
+                //   );
+                // } else {
+                //   setSheetName(xlsx, groupName);
+                // }
+              }
+              function getTableData(groupName, title, button, dt) {
+                    // Processes Datatable row data to build sheet.
+                    //Params:
+                    //  dt: Datatable API.
+                    //  title: Title displayed at top of SS or empty str for no title.
+                    //Returns:
+                    //  String of XML formatted worksheet.
+                    //console.log('getTableData', groupName);
+                    let totalHe = 0;
+                    let horasLab = 0;
+                    let montoHe = 0;
+                    let monto100 = 0;
+                    // TOTALES GENERALES.
+                    let tgeneralHe = 0;
+                    let tghorasLab = 0;
+                    let tgmontoHe = 0;
+                    let tgmonto100 = 0;
+                    let thoras100 = 0;
+                    let tghoras100 = 0;
+
+                    //----------------
+                    var dataSrc = getDataSrc(dt);
+                    var header = getHeaderNames(dt);
+                    var rowNum = 1;
+                    var mergeCells = [];
+                    var mergeCol = (header.length - 1 + 10).toString(36).toUpperCase();
+                    var ws = "";
+                    var selectorModifier = {};
+                    if (button.exportOptions.hasOwnProperty("modifier")) {
+                      selectorModifier = button.exportOptions.modifier;
+                    }
+
+                    ws += buildCols(header);
+                    ws += "<sheetData>";
+
+                    // Print button.title
+                    if (button.title.length > 0) {
+                      if (button.title === "*") {
+                        button.title = document.getElementsByTagName("title")[0].innerHTML;
+                      }
+
+                      ws += buildRow([button.title], rowNum, 51);
+          
+                      mergeCells.push(
+                        '<mergeCell ref="A' + rowNum + ":" + mergeCol + "" + rowNum + '"/>'
+                      );
+
+                      rowNum++;
+                    }
+
+                    // Print button.messageTop
+                    if (button.messageTop.length > 0 && button.messageTop.length != "*") {
+                      ws += buildRow([button.messageTop], rowNum, 51);
+         
+                      mergeCells.push(
+                        '<mergeCell ref="A' + rowNum + ":" + mergeCol + "" + rowNum + '"/>'
+                      );
+
+                      rowNum++;
+                    }
+
+                    // All rows on one page with group names separating groups
+                    if (Array.isArray(groupName)) {
+                          if (button.header) {
+            
+                            ws += buildRow(header, rowNum, 2);
+                            rowNum++;
+                          }
+          
+                      var currentGroup = "";
+                      let fil = 0;
+                      // Loop through each row to append to sheet.
+                      dt.rows(selectorModifier).every(function (rowIdx,tableLoop,rowLoop) {
+                            fil++;
+                            var data = this.data();
+                            if (data[dataSrc] !== currentGroup) {
+               
+                                //agregar la fila del grupo  
+                                //Reinicio del total por grupo
+                                currentGroup = data[dataSrc];
+                                totalHe = 0;
+                                horasLab = 0;
+                                montoHe = 0;
+                                monto100 = 0;
+                                thoras100 = 0;
+                                rowNum++;
+                            }
+                            //Aqui se hacen los calculos para totalizar.
+                            if( data[dataSrc] = currentGroup ) {
+                                totalHe += parseFloat(data[14]);
+                                horasLab += parseFloat(data[13]);
+                                montoHe += parseFloat(data[20]);
+                                monto100 += parseFloat(data[22]);
+                                thoras100 += parseFloat(data[21])
+                                //totales generales
+                                tgeneralHe += parseFloat(data[14]);
+                                tghorasLab += parseFloat(data[13]);
+                                tgmontoHe += parseFloat(data[20]);
+                                tgmonto100 += parseFloat(data[22]);
+                                tghoras100 += parseFloat(data[21]);
+                            }
+                      
+                            // If data is object based then it needs to be converted
+                            // to an array before sending to buildRow()
+            
+                            // Dibuja todas las filas de la data.
+                            data[8] = data[8].replaceAll('&nbsp;', '');
+                            data[9] = data[9].replaceAll('&nbsp;', '');
+                            data[10] = data[10].replaceAll('&nbsp;', '');
+                            data[11] = data[11].replaceAll('&nbsp;', '');
+                            ws += buildRow([fil,data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],
+                            data[9],data[10],data[11],data[12],data[13],data[14],data[15],data[16],data[17],data[18],
+                            data[19],data[20],data[21],data[22]], rowNum, "",51);
+
+                            rowNum++;
+                            //agrega la fila de grupo
+                            
+                            ws += buildRow([data[2],"","","","","","","","","","","","",
+                            horasLab.toFixed(2),totalHe.toFixed(2),"","","","","",montoHe.toFixed(2),thoras100.toFixed(2),
+                            monto100.toFixed(2)],"",51);
+           
+                        });
+                        //Ultimo Grupo tenia problema que no salia.
+                        //rowNum++;
+                        //ws += buildRow([currentGroup,'','',total,'',totalSalary.toFixed(2)],"",51);
+        
+                        rowNum++;
+                        ws += buildRow(["..."],"",51);
+
+                        //Calculo de Total de la Hora
+                        rowNum++;
+                        ws += buildRow(["Total General: ","","","","","","","","","","","","",tghorasLab.toFixed(2),
+                        tgeneralHe.toFixed(2),"","","","","",tgmontoHe.toFixed(2),tghoras100.toFixed(2),tgmonto100.toFixed(2)],"",51);
+                        rowNum++;
+          
+                        } else {
+                        // Place each group on individual sheets
+                        if (title) {
+                            ws += buildRow([title], rowNum, 51);
+
+                            mergeCells.push(
+                              '<mergeCell ref="A' +
+                                rowNum +
+                                ":" +
+                                mergeCol +
+                                "" +
+                                rowNum +
+                                '"/>'
+                            );
+                             rowNum++;
+                        }
+
+                        if (button.header) {
+                            ws += buildRow(header, rowNum, 2);
+                            rowNum++;
+                          }
+
+                        // Loop through each row to append to sheet.
+          
+                          table
+                            .rows(function (idx, data, node) {
+                              return data[dataSrc] === groupName ? true : false;
+                            }, selectorModifier)
+                            .every(function (rowIdx, tableLoop, rowLoop) {
+                              var data = this.data();
+                              // If data is object based then it needs to be converted
+                              // to an array before sending to buildRow()
+                              ws += buildRow(data, rowNum, "");
+
+                              rowNum++;
+                            });
+                    
+                    }
+
+                    // Output footer
+                    if (button.footer) {
+                      ws += buildRow(getFooterNames(dt), rowNum, 2);
+                      rowNum++;
+                    }
+
+                    // Print button.messageBottom
+                    if (
+                      button.messageBottom.length > 0 &&
+                      button.messageBottom.length != "*"
+                    ) 
+                    {
+                              ws += buildRow([button.messageBottom], rowNum, 51);
+
+                              mergeCells.push(
+                                '<mergeCell ref="A' + rowNum + ":" + mergeCol + "" + rowNum + '"/>'
+                              );
+                              rowNum++;
+                    }
+
+                    mergeCellsElement = "";
+
+                    if (mergeCells) {
+                      mergeCellsElement =
+                        '<mergeCells count="' +
+                        mergeCells.length +
+                        '">' +
+                        mergeCells +
+                        "</mergeCells>";
+                    }
+                    ws += "</sheetData>" + mergeCellsElement;
+
+                    return ws;
+              }
+              function getHeaderNames(dt) {
+                // Gets header names.
+                //params:F
+                //  dt: Datatable API.
+                //Returns:
+                //  Array of column header names.
+    
+                var header = dt.columns().header().toArray();
+
+                var names = [];
+                header.forEach(function (th) {
+                  names.push($(th).html());
+                });
+
+                return names;
+              }
+              function buildCols(data) {
+                // Builds cols XML.
+                //To do: deifne widths for each column.
+                //Params:
+                //  data: row data.
+                //Returns:
+                //  String of XML formatted column widths.
+
+                var cols = "<cols>";
+
+                for (i = 0; i < data.length; i++) {
+                  colNum = i + 1;
+                  cols +=
+                    '<col min="' +
+                    colNum +
+                    '" max="' +
+                    colNum +
+                    '" width="20" customWidth="1"/>';
+                }
+
+                cols += "</cols>";
+
+                return cols;
+              }
+              function buildRow(data, rowNum, styleNum) {
+                // Builds row XML.
+                //Params:
+                //  data: Row data.
+                //  rowNum: Excel row number.
+                //  styleNum: style number or empty string for no style.
+                //Returns:
+                //  String of XML formatted row.
+                var style = styleNum ? ' s="' + styleNum + '"' : "";
+                var row = '<row r="' + rowNum + '">';
+
+                for (i = 0; i < data.length; i++) {
+                  colNum = (i + 10).toString(36).toUpperCase(); // Convert to alpha
+
+                  var cr = colNum + rowNum;
+                  row +=
+                    '<c t="inlineStr" r="' +
+                    cr +
+                    '"' +
+                    style +
+                    ">" +
+                    "<is>" +
+                    "<t>" +
+                    data[i] +
+                    "</t>" +
+                    "</is>" +
+                    "</c>";
+                }
+
+                row += "</row>";
+
+                return row;
+
+              }
+              function setSheetName(xlsx, name) {
+                // Changes tab title for sheet.
+                //Params:
+                //  xlsx: xlxs worksheet object.
+                //  name: name for sheet.
+
+                if (name.length > 0) {
+                  var source = xlsx.xl["workbook.xml"].getElementsByTagName("sheet")[0];
+                  source.setAttribute("name", name);
+                }
+              }
+  
+            //tabla de calculo de Horas Extras.
+            let tableHoraExtras = new DataTable('#TableHorasExtras', {
+                order: [[1, "asc"]],
+                rowGroup: {
+                    startRender : null,
+                    endRender: function (rows, group) { 
+                       
+                        let totalHorasEx = rows
+                            .data()
+                            .pluck(14)
+                            .reduce((a, b) => a + parseFloat(b), 0); 
+                            
+                        let totalMontoex = rows
+                            .data()
+                            .pluck(20)
+                            .reduce((a, b) => a + parseFloat(b), 0);
+
+                        let totalHoras100 = rows
+                            .data()
+                            .pluck(21)
+                            .reduce((a, b) => a + parseFloat(b), 0);               
+
+                        let totalMonto100 = rows
+                            .data()
+                            .pluck(22)
+                            .reduce((a, b) => a + parseFloat(b), 0);
+
+                        let tr = document.createElement("tr");
+
+                       
+                       
+                        var dayfree = rows
+                        .data()
+                        .pluck(5)[0];
+                        
+                        let descanso="";
+                        cadena = 'Libre';
+
+                        if (dayfree.includes(cadena) || dayfree.includes(cadena.toUpperCase())) { 
+                            descanso='Descanso: 1 dia Completo.'
+                        } 
+                        if (dayfree.includes('1/2 DIA')) { 
+                            descanso='Descanso: 1/2 dia.'
+                        } 
+
+                        addCell(tr,group + ' - ' + descanso, 14);
+
+                        addCell(tr, totalHorasEx.toFixed(2));
+                        addCell(tr, "");
+                        addCell(tr, "");
+                        addCell(tr, "");
+                        addCell(tr, totalMontoex.toFixed(2));
+                        addCell(tr, totalHoras100.toFixed(2));
+                        addCell(tr, totalMonto100.toFixed(2));
+                        return tr;
+                    },
+                    dataSrc: 2
+                },
+                dom: "Bfrtip",
+                buttons:{
+                    dom:{
+                        button:{
+                            className: 'btn',
+                        },
+                    },
+                    buttons:[
+                        {
+                            extend: "excel",
+                            text: "exportar a excel",
+                            className: 'btn btn-outline-success',
+                            exportOptions: {
+                                modifier: {
+                                    search: "applied",
+                                },
+                            },
+                            customize: function (xlsx, button, dt) { 
+                                multiSheet = false;
+                                var dataSrc = getDataSrc(dt);
+                                var groupNames = [
+                                    ...new Set(dt.column(dataSrc).data().toArray()),
+                                ];
+                                updateSheet1(xlsx, groupNames, "", button, dt);
+                            }
+                        }       
+                    ],
+                },               
+                language:
+                {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                aLengthMenu: [
+                    [10, 25, 30, 50, 100, 200, -1],
+                    [10, 25, 30, 50, 100, 200]],
+                iDisplayLength: 25,
+                "columnDefs": [
+                     {
+                        "targets": 3,
+                        render: function (data, type, full, meta) {
+                            if (data.trim() == 'Domingo') {
+                                var rowIndex = meta.row + 1;
+                                $('#TableHorasExtras tbody tr:nth-child(' + rowIndex + ')').addClass('yellowforce');
+                                return data;
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        "targets": 15,
+                        visible: false,
+                        search: false,
+                        render: function (data, type, full, meta) {
+                            if (data == 'True') {
+                                var rowIndex = meta.row + 1;
+                                $('#TableHorasExtras tbody tr:nth-child(' + rowIndex + ')').addClass('lightgreen');
+                                return data;
+                            } else {
+                                return data;
+                            }
+                        }
+                    },
+                    {
+                        "targets": 16,
+                        visible: false,
+                        search: false,
+                        render: function (data, type, full, meta) {
+                            if (data == 'True') {
+                                var rowIndex = meta.row + 1;
+                                $('#TableHorasExtras tbody tr:nth-child(' + rowIndex + ')').addClass('lightRed');
+                                return data;
+                            } else {
+                                return data;
+                            }
+                        }
+                    }
+                ]
+            });
+            //Fin de Configuracion de Tabla de Horas Extras.
+            //--------------------------------------------//
+            let table1 = new DataTable('#TablePonches', {
+                language:
+                {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                aLengthMenu: [
+                    [25, 30, 50, 100, 200, -1],
+                    [25, 30, 50, 100, 200]
+                ],
+                iDisplayLength: 25,
+            });
+            let table3 = new DataTable('#TableFeriado', {
+                language:
+                {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                select: true
+            });
+
+            //ejecuta el resumen del pago de las horas extras por empleado.
+            $('#TableHorasExtras tbody tr td:nth-child(3)').on('click', function () {
+                var userDetail = [];
+                var row = $(this).closest("tr"); 
+                //parametro del id del empleado.
+                var paramId = row.find("td:nth-child(2)").text().trim();
+                userDetail.push(paramId);
+                //parametro de Nombre del empleado.
+                var paramEmpleado = row.find("td:nth-child(3)").text().trim();
+                userDetail.push(paramEmpleado);  
+                var MontoHoras = 0;
+                var HorasExtras = 0;
+                var items = [];
+                var fila = 0;
+
+                var filas = tableHoraExtras.rows().data()
+                    .each(function(value, index){
+                        if (value[1] == paramId) { 
+                            if (value[14] > 0) {
+                                HorasExtras += parseFloat(value[14]);
+                                MontoHoras += parseFloat(value[20]);                        
+                                items.push({
+                                    "it" : fila+=1,
+                                    "fecha" : value[4],
+                                    "HorasExtras" : value[14],
+                                    "MontoPesos" : value[20]
+                                });
+                                userDetail.push(items);    
+                            }
+                        }    
+                    });
+                MontoHoras = MontoHoras.toFixed(2);
+                HorasExtras = HorasExtras.toFixed(2);
+                //monto de horas extras y monto pesos horas extras.
+                userDetail.push(HorasExtras);
+                userDetail.push(MontoHoras);
+
+                //abrir el modal de datalles de pago de horas extras empleado.
+                $("#dtEmploDetails tbody tr").remove();
+                $("#modalEmploDetails .idemplo").empty()
+                $("#modalEmploDetails .nameEmplo").empty();
+                $("#modalEmploDetails .valHorasExtras").empty();
+                $("#modalEmploDetails .valMontoTotal").empty();
+                $("#modalEmploDetails .idemplo").append("Codigo : " + paramId);
+                $("#modalEmploDetails .nameEmplo").append("Nombre : " + paramEmpleado);
+                $("#modalEmploDetails .valHorasExtras").append("Total Horas Extras : " + HorasExtras);
+                $("#modalEmploDetails .valMontoTotal").append("Total Monto Pesos : " + MontoHoras)
+                
+                //recorro todos los items que conforman los pagos de las horas extras.
+                items.forEach(function (item, index, data) {
+                    $("#dtEmploDetails tbody").append(  
+                        "<tr><td>" + data[index].it  +  "</td>" + 
+                        "<td>" + data[index].fecha +"</td>" +
+                        "<td>" + data[index].HorasExtras + "</td>" +
+                        "<td>" + data[index].MontoPesos +"</td></tr>"
+                    );            
+                });
+
+                //muestro el modal de pagos.
+                $("#modalEmploDetails").modal("show");
+            });       
+            $('#TableHorasExtras tbody tr td:nth-child(3)').hover(function() { 
+                $(this).css('cursor', 'pointer');
+                $(this).css('font-weight', '700');
+            },function(){
+                 $(this).css('font-weight', '400');
+            });
+        });
+    </script>
+}
+
+
+
+   
+        
+
+
+

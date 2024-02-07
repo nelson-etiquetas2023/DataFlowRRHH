@@ -1,0 +1,37 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.lightRed {
+    background-color: #f0aaaa !important
+}
+.lightgreen {
+    background-color: #7ab79a !important
+}
+
+.yellowforce {
+    background-color: #fbc71e !important
+}
+
+table.dataTable td {
+    font-size: 1em;
+}
+
+table.dataTable tr.dtrg-level-0 td {
+    font-size: .8em;
+}
