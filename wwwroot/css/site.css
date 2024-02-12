@@ -28,6 +28,10 @@ body {
     background-color: #fbc71e !important
 }
 
+.RedAusencia {
+    background-color: #F30000 !important
+}
+
 table.dataTable td {
     font-size: 1em;
 }

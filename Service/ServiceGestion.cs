@@ -43,7 +43,7 @@ namespace DataFlowRRHH.Service
             db = _db;
             micomm = new SqlConnection
             {
-                ConnectionString = configuration.GetSection("ConnectionStrings").GetSection("SettingEtiquetas").Value  
+                ConnectionString = configuration.GetSection("ConnectionStrings").GetSection("SettingAriaSusanna").Value  
             };
         }
         //Etapa 1 de la Consulta.
@@ -110,6 +110,9 @@ namespace DataFlowRRHH.Service
 
             }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate).OrderBy(f => f.RecordTime);
 
+            //prueba para agregar una fila.
+           
+
             return ListaPonches = await ponches.ToListAsync();
         }
 
@@ -165,13 +168,17 @@ namespace DataFlowRRHH.Service
                                 grp.FirstOrDefault()!.RecordTime.Month,
                                 grp.FirstOrDefault()!.RecordTime.Day, grp.FirstOrDefault()!.End_journal_hour, grp.FirstOrDefault()!.End_journal_minutes, 0)).TotalHours),
                                 sueldo_hora = grp.FirstOrDefault()!.salario_hora,
-                                DiaSemana = (grp.FirstOrDefault()!.RecordTime).DayOfWeek.ToString()
+                                DiaSemana = (grp.FirstOrDefault()!.RecordTime).DayOfWeek.ToString(),
+                                diaAusencia = grp.Count() == - 1
         }).OrderBy(o => o.IdUser).ToList();
 
             //iteracion sobre las filas de la data
             //-----------------------------------//
             foreach (var item in jornadas) 
             {
+                
+
+
                 //asignar la entrada y salida del horario asignado hour_in // hour_out x dia en horario
                 int[] values_shifth_start_end_day = StartEndDayShift(item.IdShift, item.IndexDay, item.Fecha);
 
@@ -179,10 +186,6 @@ namespace DataFlowRRHH.Service
                 item.Start_journal_minutes = values_shifth_start_end_day[1];
                 item.ShiftEnd = new TimeSpan(values_shifth_start_end_day[2], values_shifth_start_end_day[3], 0);
                 item.End_journal_minutes = values_shifth_start_end_day[3];
-
-
-                //checkear los dias no marcado por empleado en todo el mes.
-                CheckAusenciasMonthEmployee();
 
                 //dia de la semana español
                 item.DiaSemana = ConverirDiaSemanaEspañol(item.DiaSemana);
@@ -237,18 +240,38 @@ namespace DataFlowRRHH.Service
             //calculo domingos
             CalculoDomingos(jornadas);
 
-            return jornadas;
+
+            
+
+
+            var GroupEmployee = from d in jornadas
+                                group d by d.IdUser into g
+                                select g;
+
+            
+            // ESTABLECER LOS DIAS DE AUSENCIA
+            foreach (var item in GroupEmployee)
+            {
+                foreach (var empleado  in item)
+                {
+                    //checkear los dias no marcado por empleado en todo el mes.
+                    CheckAusenciasMonthEmployee(empleado.IdUser,empleado.Empleado);
+
+                }
+            }
+
+            return jornadas.OrderBy(x => x.Fecha).ToList();
         }
 
-        public DateTime[] CheckAusenciasMonthEmployee() 
+        public DateTime[] CheckAusenciasMonthEmployee(int idemployee,string employeename ) 
         {
 
             //parametros primero y ultimo de mes 
             int DayStartMonth = (int) _todateQuery.Day;
-            int DayEndMonth = (int) _fromdateQuery.Day;
+            int DayEndMonth = (int) DateTime.Today.Day;
             int monthQuery = (int)_todateQuery.Month;
             int yearQuery = (int)_todateQuery.Year;
-            int idEployee = 204;
+            
            
             //matriz para almacenar los dias de ausencia.
             DateTime[] DaysAusencias = new DateTime[DayEndMonth];
@@ -256,7 +279,7 @@ namespace DataFlowRRHH.Service
             //recorre todo el mes de la consulta.
             int dayCounter = 0;
             //filtrado de ponches por empleados
-            var ponches_empleado = jornadas.Where(x => x.IdUser == idEployee);
+            var ponches_empleado = jornadas.Where(x => x.IdUser == idemployee);
 
             for (int i = DayStartMonth; i <= DayEndMonth; i++) 
             {
@@ -276,7 +299,37 @@ namespace DataFlowRRHH.Service
             int yearDefault = 0001;
             DaysAusencias = DaysAusencias.Where(x => x.Year != yearDefault).ToArray();
 
+            foreach (var item in DaysAusencias) 
+            {
+                //agregar las filas de dias de ausencia.
+                AgregarFilaDiaAusencia(idemployee, employeename, item);
+            }
+
+
+            
+
             return DaysAusencias;
+        }
+
+        public void AgregarFilaDiaAusencia(int idemployee, string employeename, DateTime DateAusencia) 
+        {
+            //prueba para agregar fila
+            if (jornadas.Any())
+            {
+
+                Jornada fila = new Jornada();
+                fila.Mark1 = "0";
+                fila.Mark2 = "0";
+                fila.Mark3 = "0";
+                fila.Mark4 = "0";
+                fila.diaAusencia = true;
+                fila.IdUser = idemployee;
+                fila.Empleado = employeename;
+                fila.Fecha = DateAusencia;
+                fila.DiaSemana = ConverirDiaSemanaEspañol(fila.Fecha.DayOfWeek.ToString()) + "/Ausencia";
+                jornadas.Add(fila);
+            }
+
         }
 
         public Boolean CalculoDomingos(List<Jornada> jornadas) {

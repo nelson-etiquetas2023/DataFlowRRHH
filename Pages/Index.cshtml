@@ -181,6 +181,8 @@
                      <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightRed"></div> 
                   <span class="badge bg-secondary" style="margin-left:20px"> Domingos </span>
                   <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="yellowforce"></div> 
+                   <span class="badge bg-secondary" style="margin-left:20px"> Dia Ausencia </span>
+                  <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="RedAusencia"></div>
             </div>
          </div/>
     </div>
@@ -228,7 +230,7 @@
                     row += 1;
                     <tr>
                         <td>
-                            @row
+                             @(item.diaAusencia ? "A" : row)
                         </td>
                         <td>
                             @item.IdUser
@@ -328,8 +330,6 @@
                     <th>Nombre del Dispositivo</th>
                     <th>Id Dpto.</th>
                     <th>Departamento</th>
-                   
-
                 </tr>
             </thead>  
             <!--Detalle de tabla-->
@@ -864,6 +864,19 @@
                                 return data;
                             }
                         }
+                    },
+                    {
+                        "targets": 0,
+                        render: function (data, type, full, meta) {
+                            var rowIndex = meta.row + 1;
+                            if (data.trim() == 'A') {
+                                $('#TableHorasExtras tbody tr:nth-child(' + rowIndex + ')').addClass('RedAusencia');
+                                return data;
+                            } else { 
+                                return data;
+                            }
+
+                        } 
                     },
                     {
                         "targets": 15,

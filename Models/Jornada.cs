@@ -44,7 +44,8 @@ namespace DataFlowRRHH.Models
         public double MontoHeDiario { get; set; }
         public double factor100 { get; set; }
         public double Montoal100 { get; set; }
-        public string DiaSemana { get; set; }
+        public string DiaSemana { get; set; } = "";
         public double horas100 { get; set; } = 0;
+        public Boolean diaAusencia { get; set; }
     }
 }

@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<BdbioAdminSqlContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("SettingEtiquetas")));
+    builder.Configuration.GetConnectionString("SettingAriaSusanna")));
 builder.Services.AddScoped<IServiceGestion, ServiceGestion>();
 
 var app = builder.Build();
