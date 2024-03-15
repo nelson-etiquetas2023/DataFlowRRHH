@@ -79,7 +79,6 @@ C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\staticwebassets.deve
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\scopedcss\Pages\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\scopedcss\bundle\DataFlowRRHH.styles.css
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\scopedcss\projectbundle\DataFlowRRHH.bundle.scp.css
-C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlowRRHH.csproj.CopyComplete
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlowRRHH.dll
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\refint\DataFlowRRHH.dll
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlowRRHH.pdb
@@ -87,3 +86,4 @@ C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlowRRHH.genrunt
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\ref\DataFlowRRHH.dll
 C:\Users\siste\source\repos\DataFlowRRHH\bin\Release\net6.0\Newtonsoft.Json.dll
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlowRRHH.sourcelink.json
+C:\Users\siste\source\repos\DataFlowRRHH\obj\Release\net6.0\DataFlow.F3E4A00D.Up2Date

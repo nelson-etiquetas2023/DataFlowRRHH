@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <None Include="wwwroot\images\gestion.jpeg" />
+    <None Include="wwwroot\js\ModulosJS.js" />
   </ItemGroup>
 
 </Project>

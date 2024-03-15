@@ -88,8 +88,8 @@ namespace DataFlowRRHH.Service
                 item.IdUserNavigation.ExternalReference = "de: " + hfp.Jornada_Start + " a: " + hfp.Jornada_End;
                 item.IdUserNavigation.IdDepartmentNavigation.Description = she.GetDepartamento(userid);
                 //nivel 1 de condiciones
-                var ch1_str1 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_Start + " :00:00 PM";
-                var ch1_str2 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_End + " :00:00 PM";
+                var ch1_str1 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_Start_hour + " :00:00 PM";
+                var ch1_str2 = item.RecordTime.ToShortDateString() + " " + hfp.Cal1_End_hour + " :00:00 PM";
                 DateTime ch1_date1 = Convert.ToDateTime(ch1_str1);
                 DateTime ch1_date2 = Convert.ToDateTime(ch1_str2);
                 int ch1_factor = Convert.ToInt16(hfp.Cal1_Factor);
@@ -213,9 +213,8 @@ namespace DataFlowRRHH.Service
                             row["Salario"] = sh;
                             row["SalarioFraccion"] = (sh * ch3_factor) / 100;
                             DtHorasExtras.Rows.Add(row);
-                            run = true;
-                        }
-                        else
+						}
+						else
                         {
                             DataRow row = DtHorasExtras.NewRow();
                             row["UserId"] = item.IdUser;
@@ -228,9 +227,8 @@ namespace DataFlowRRHH.Service
                             row["Salario"] = sh;
                             row["SalarioFraccion"] = (sh * ch3_factor) / 100;
                             DtHorasExtras.Rows.Add(row);
-                            run = false;
-                        }
-                    }
+						}
+					}
 
                 }
 
@@ -288,8 +286,8 @@ namespace DataFlowRRHH.Service
             {
                 hfp.Jornada_Start = dt.Rows[0]["t2inhour"].ToString()!;
                 hfp.Jornada_End = dt.Rows[0]["t2outhour"].ToString()!;
-                hfp.Cal1_Start = dt.Rows[0]["t2overtime1beginhour"].ToString()!;
-                hfp.Cal1_End = dt.Rows[0]["t2overtime1endhour"].ToString()!;
+                hfp.Cal1_Start_hour = dt.Rows[0]["t2overtime1beginhour"].ToString()!;
+                hfp.Cal1_End_hour = dt.Rows[0]["t2overtime1endhour"].ToString()!;
                 hfp.Cal1_Factor = dt.Rows[0]["t2overtime1factor"].ToString()!;
                 hfp.Cal2_Start = dt.Rows[0]["t2overtime2beginhour"].ToString()!;
                 hfp.Cal2_End = dt.Rows[0]["t2overtime2endhour"].ToString()!;

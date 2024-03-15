@@ -43,7 +43,7 @@ namespace DataFlowRRHH.Service
             db = _db;
             micomm = new SqlConnection
             {
-                ConnectionString = configuration.GetSection("ConnectionStrings").GetSection("SettingAriaSusanna").Value  
+                ConnectionString = configuration.GetSection("ConnectionStrings").GetSection("SettingEtiquetas").Value  
             };
         }
         //Etapa 1 de la Consulta.
@@ -108,7 +108,7 @@ namespace DataFlowRRHH.Service
                 End_journal_hour = x.Horario.Select(g => g.end_journal_hour).FirstOrDefault(),
                 End_journal_minutes = x.Horario.Select(g => g.end_journal_minutes).FirstOrDefault(),
 
-            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate).OrderBy(f => f.RecordTime);
+            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate && f.IdUser == 11).OrderBy(f => f.RecordTime);
 
             //prueba para agregar una fila.
            
@@ -117,7 +117,7 @@ namespace DataFlowRRHH.Service
         }
 
         public int IndexDay(DateTime fecha)
-        {
+        { 
             int idxday = 0;
             if (fecha.DayOfWeek == DayOfWeek.Saturday) idxday = 5;
             return idxday;
@@ -164,9 +164,7 @@ namespace DataFlowRRHH.Service
                                 IndexDay = grp.FirstOrDefault()!.Indexday,
                                 End_journal_hour = grp.FirstOrDefault()!.End_journal_hour,
                                 End_journal_minutes = grp.FirstOrDefault()!.End_journal_minutes,
-                                Horas_Extras = Convert.ToDouble((grp.LastOrDefault()!.RecordTime.AddMinutes(-15) - new DateTime(grp.FirstOrDefault()!.RecordTime.Year,
-                                grp.FirstOrDefault()!.RecordTime.Month,
-                                grp.FirstOrDefault()!.RecordTime.Day, grp.FirstOrDefault()!.End_journal_hour, grp.FirstOrDefault()!.End_journal_minutes, 0)).TotalHours),
+                                Horas_Extras = 0,     
                                 sueldo_hora = grp.FirstOrDefault()!.salario_hora,
                                 DiaSemana = (grp.FirstOrDefault()!.RecordTime).DayOfWeek.ToString(),
                                 diaAusencia = grp.Count() == - 1
@@ -176,37 +174,72 @@ namespace DataFlowRRHH.Service
             //-----------------------------------//
             foreach (var item in jornadas) 
             {
-                
 
+                //buscar los parametros de los horarios.
+                ShiftAssingEmployeeRow params_shift = ObtenerParametrosHorarios(item.IdShift, item.IndexDay);
+
+                
 
                 //asignar la entrada y salida del horario asignado hour_in // hour_out x dia en horario
                 int[] values_shifth_start_end_day = StartEndDayShift(item.IdShift, item.IndexDay, item.Fecha);
 
                 item.ShiftStart = new TimeSpan(values_shifth_start_end_day[0], values_shifth_start_end_day[1], 0);
                 item.Start_journal_minutes = values_shifth_start_end_day[1];
-                item.ShiftEnd = new TimeSpan(values_shifth_start_end_day[2], values_shifth_start_end_day[3], 0);
+                item.ShiftEnd = new TimeSpan(values_shifth_start_end_day[2],  values_shifth_start_end_day[3], 0);
                 item.End_journal_minutes = values_shifth_start_end_day[3];
+
+                if (params_shift.Active_Escala1)
+                {
+                    item.factor = values_shifth_start_end_day[4];
+                } else 
+                {
+                    item.factor = 0;
+                }
+                
 
                 //dia de la semana español
                 item.DiaSemana = ConverirDiaSemanaEspañol(item.DiaSemana);
 
-                //Redondear horas extras.
-                item.Horas_Extras = Math.Round(item.Horas_Extras, 2, MidpointRounding.AwayFromZero);
+                // Calculo de Horas Extras
+                
+                DateTime dtEndShift = new(item.Fecha.Year, item.Fecha.Month,
+                    item.Fecha.Day, item.ShiftEnd.Hours, item.ShiftEnd.Minutes,0);
 
+                DateTime dtLastMark = item.Mark4_Dt == null ? new DateTime(item.Fecha.Year,1,1,0,0,0) :
+                    (DateTime) item.Mark4_Dt;
+
+                int WaitMinutes = -10;
+
+                TimeSpan ts = (dtLastMark - dtEndShift).TotalMilliseconds < 0 ? 
+                    new TimeSpan(0,0,0) : (dtLastMark.Add(new TimeSpan(0, WaitMinutes, 0)) - dtEndShift);
+
+                item.he_string = ts.Hours > 0 ? ts.Hours + " H " : "";
+                item.he_string += ts.Minutes > 0 ? ts.Minutes + " M" : "";
+
+                var hours = (double)(ts.Hours * 60);
+                var minutes = (double)(ts.Minutes);
+
+                item.Horas_Extras = Math.Round(((hours + minutes) / 60),2,MidpointRounding.AwayFromZero);
+                
+                
+    
                 //Validar horas extras.
-                if (item.Horas_Jornada == 0 || item.Horas_Extras < 0 || item.ShiftName==null || item.Ponches > 5) 
+                if (item.Horas_Jornada == 0 || item.Horas_Extras < 0 
+                    || item.ShiftName==null || item.Ponches > 5) 
                 {
                     item.Horas_Extras = 0;
                 }
-                //Calculos de horas al 35.
+
+                //Calculos de horas extras escala 1
                 if (item.Horas_Extras > 0) 
                 {
-                    item.factor = 35;
-                    item.fr_sueldo = (item.factor * Convert.ToDouble(item.sueldo_hora))/100;
-                    item.MontoHeDiario = Math.Round((item.Horas_Extras * item.fr_sueldo),2,MidpointRounding.AwayFromZero);
+                    item.factor = params_shift.Active_Escala1 ? Convert.ToDouble(params_shift.Cal1_Factor) : 0;
+                    item.fr_sueldo = params_shift.Active_Escala1 ? ((item.factor * Convert.ToDouble(item.sueldo_hora))/100) : 0;
+                    item.MontoHeDiario = params_shift.Active_Escala1 ? 
+                        Math.Round((item.Horas_Extras * item.fr_sueldo),2,MidpointRounding.AwayFromZero) : 0;
                 }
-                //Calculo de la salida de horario
 
+                //Calculo de la salida de horario
                 TimeSpan ShifthEnd = new(item.End_journal_hour, item.End_journal_minutes, 0);
 
                 //calculo de los feriados laborados.
@@ -227,38 +260,37 @@ namespace DataFlowRRHH.Service
                 item.DayFree = DayFreeWeek(item.IdShift,item.IndexDay);
 
                 if (item.DayFree) {
-                   item.factor100 = 100;
+                    //verifico que no calcule horas extras.
+                    item.Horas_Extras = 0;
+                    item.he_string = "";
+                    item.factor = 0;
+                    item.fr_sueldo = 0;
+
+                    item.factor100 = 100;
                    //calculo al 35% cambia al 100%
-                   item.factor = 100;
-                   item.fr_sueldo = Convert.ToDouble(item.sueldo_hora);
+                   
                    item.MontoHeDiario = Math.Round((item.fr_sueldo * item.Horas_Extras),2,MidpointRounding.AwayFromZero);
-                    item.horas100 = Math.Round(item.Horas_Jornada,2,MidpointRounding.AwayFromZero);
-                    item.Montoal100 = Math.Round((Convert.ToDouble(item.sueldo_hora) * item.Horas_Jornada),2,MidpointRounding.AwayFromZero);
+                   item.horas100 = Math.Round(item.Horas_Jornada,2,MidpointRounding.AwayFromZero);
+                   item.Montoal100 = Math.Round((Convert.ToDouble(item.sueldo_hora) * item.Horas_Jornada),2,MidpointRounding.AwayFromZero);
                 } 
             }
 
             //calculo domingos
             CalculoDomingos(jornadas);
 
+            //var GroupEmployee = from d in jornadas
+            //                    group d by d.IdUser into g
+            //                    select g;
 
-            
-
-
-            var GroupEmployee = from d in jornadas
-                                group d by d.IdUser into g
-                                select g;
-
-            
-            // ESTABLECER LOS DIAS DE AUSENCIA
-            foreach (var item in GroupEmployee)
-            {
-                foreach (var empleado  in item)
-                {
-                    //checkear los dias no marcado por empleado en todo el mes.
-                    CheckAusenciasMonthEmployee(empleado.IdUser,empleado.Empleado);
-
-                }
-            }
+            //// ESTABLECER LOS DIAS DE AUSENCIA
+            //foreach (var item in GroupEmployee)
+            //{
+            //    foreach (var empleado  in item)
+            //    {
+            //        //checkear los dias no marcado por empleado en todo el mes.
+            //        CheckAusenciasMonthEmployee(empleado.IdUser,empleado.Empleado);
+            //    }
+            //}
 
             return jornadas.OrderBy(x => x.Fecha).ToList();
         }
@@ -268,7 +300,7 @@ namespace DataFlowRRHH.Service
 
             //parametros primero y ultimo de mes 
             int DayStartMonth = (int) _todateQuery.Day;
-            int DayEndMonth = (int) DateTime.Today.Day;
+            int DayEndMonth = DateTime.Today > _fromdateQuery ? (int) _fromdateQuery.Day : DateTime.Today.Day;
             int monthQuery = (int)_todateQuery.Month;
             int yearQuery = (int)_todateQuery.Year;
             
@@ -285,7 +317,7 @@ namespace DataFlowRRHH.Service
             {
                 
                 dayCounter += 1;
-                DateTime DayAusence = new DateTime(yearQuery, monthQuery, dayCounter);
+                DateTime DayAusence = new(yearQuery, monthQuery, dayCounter);
 
                 var check = ponches_empleado.Where(x => x.Fecha.Day == DayAusence.Day);
 
@@ -317,7 +349,7 @@ namespace DataFlowRRHH.Service
             if (jornadas.Any())
             {
 
-                Jornada fila = new Jornada();
+				Jornada fila = new Jornada();
                 fila.Mark1 = "0";
                 fila.Mark2 = "0";
                 fila.Mark3 = "0";
@@ -349,7 +381,7 @@ namespace DataFlowRRHH.Service
                 foreach (var journal in grupo)
                 {
                     journal.Tipo_Descanso = tipo_descanso;
-                    if (journal.DiaSemana == "Domingo")
+                     if (journal.DiaSemana == "Domingo")
                     {
                         numDomingos++;
                         //los que descansan 1 dia comnpleto.
@@ -360,25 +392,31 @@ namespace DataFlowRRHH.Service
                                 UpdateCalculateListDomingos(journal, jornadas);
                             }
                             else {
-                                // no se calcula
-                                journal.factor100 = 0;
-                                //calculo al 35% cambia al 100%
-                                journal.factor = 0;
-                                journal.fr_sueldo = 0;
-                                journal.MontoHeDiario = 0;
-                                journal.horas100 = 0;
-                                journal.Montoal100 = 0;
+                                //primeros dos domingos que no se paga
+                                if (journal.Horas_Extras > 0)
+                                {
+									
+								}
+                                else 
+                                {
+									// no se calcula
+									journal.factor100 = 0;
+									//calculo al 35% cambia al 100%
+									journal.factor = 0;
+									journal.fr_sueldo = 0;
+									journal.MontoHeDiario = 0;
+									journal.horas100 = 0;
+									journal.Montoal100 = 0;
+								}
+                                
                             }
                         }
-
                         //los que descansas medio dia.
                         if (journal.Tipo_Descanso == "medio dia.")
                         {
                             UpdateCalculateListDomingos(journal, jornadas);
                         }
                     }
-                    
-
                 }
             }
 
@@ -391,9 +429,12 @@ namespace DataFlowRRHH.Service
             // a los horarios que descansan 1 dia completo
             journal.factor100 = 0;
             //calculo al 35% cambia al 100%
-            journal.factor = 100;
-            journal.fr_sueldo = Convert.ToDouble(journal.sueldo_hora);
-            journal.MontoHeDiario = Math.Round((journal.fr_sueldo * journal.Horas_Extras), 2, MidpointRounding.AwayFromZero);
+            //journal.factor = 100;
+            journal.factor = 0;
+            //journal.fr_sueldo = Convert.ToDouble(journal.sueldo_hora);
+            journal.fr_sueldo = 0;
+            //journal.MontoHeDiario = Math.Round((journal.fr_sueldo * journal.Horas_Extras), 2, MidpointRounding.AwayFromZero);
+            journal.MontoHeDiario = 0;
             journal.horas100 = Math.Round(journal.Horas_Jornada, 2, MidpointRounding.AwayFromZero);
             journal.Montoal100 = Math.Round((Convert.ToDouble(journal.sueldo_hora) * journal.Horas_Jornada), 2, MidpointRounding.AwayFromZero);
             // actualizar los datos la lista original.
@@ -431,7 +472,7 @@ namespace DataFlowRRHH.Service
             // otros horarios.
             if (horario == "")
             {
-                horario = "sin asignar";
+				horario = "sin asignar";
             }
 
             return tipo;
@@ -451,14 +492,14 @@ namespace DataFlowRRHH.Service
 
         public int[] StartEndDayShift(int idShift, int indexday, DateTime fechaPonche) 
         {
-            DataTable dt = new DataTable();
-            int[] StartEndConfigHourDay = new int[4];
+            DataTable dt = new();
+            int[] StartEndConfigHourDay = new int[5];
 
             SqlCommand comando = new()
             {
                 Connection = micomm,
                 CommandType = CommandType.Text,
-                CommandText = "SELECT t2inhour,t2inminute,t2outhour,t2outminute FROM ShiftDetail WHERE ShiftId=@p1 and DayId=@p2"
+                CommandText = "SELECT t2inhour,t2inminute,t2outhour,t2outminute,t2overtime1factor FROM ShiftDetail WHERE ShiftId=@p1 and DayId=@p2"
             };
             SqlParameter p1 = new("@p1", idShift);
             SqlParameter p2 = new("@p2", indexday);
@@ -466,13 +507,14 @@ namespace DataFlowRRHH.Service
             comando.Parameters.Add(p2);
             comando.ExecuteNonQuery();
 
-            SqlDataAdapter da = new SqlDataAdapter(comando);
+            SqlDataAdapter da = new(comando);
             da.Fill(dt);
 
             //position 0 = in hour.
             //position 1 = in minute.
             //position 2 = out hour.
             //position 3 = out minute.
+            //position 4 = factor he.
 
             if (dt.Rows.Count > 0) 
             {
@@ -480,18 +522,21 @@ namespace DataFlowRRHH.Service
                 var minute_in = Convert.ToInt32(dt.Rows[0]["t2inminute"]);
                 var hour_out = Convert.ToInt32(dt.Rows[0]["t2outhour"]);
                 var minute_out = Convert.ToInt32(dt.Rows[0]["t2outminute"]);
+                var factor1 = Convert.ToInt32(dt.Rows[0]["t2overtime1factor"]);
+
 
                 StartEndConfigHourDay[0] = hour_in;
                 StartEndConfigHourDay[1] = minute_in;
                 StartEndConfigHourDay[2] = hour_out;
                 StartEndConfigHourDay[3] = minute_out;
+                StartEndConfigHourDay[4] = factor1;
+
             }
 
-            
+
             return StartEndConfigHourDay;
            
         }
-      
         public Boolean DayFreeWeek(int Idshift, int Indexday) 
         {
            
@@ -533,7 +578,7 @@ namespace DataFlowRRHH.Service
         public List<CampoHorasExtras> CalculoEscalasDeHorarios(List<CampoHorasExtras> data, List<Feriado> feriados)
         {
 
-            var ferdos = feriados;
+			var ferdos = feriados;
             // Horas Extras por Escalas
             foreach (var item in data)
             {       
@@ -541,20 +586,20 @@ namespace DataFlowRRHH.Service
                 int shiftf = ObtenerHorarioEmpleado(userid);
                 int indexday = Convert.ToInt16(item.Fecha_Marcaje.DayOfWeek - 1);
                 if (indexday == -1) indexday = 6;
-                string dia = item.Fecha_Marcaje.ToString("dddd");
-                //Parametros de los horarios
-                ShiftAssingEmployeeRow hfp = ObtenerParametrosHorarios(shiftf, indexday);
+				_ = item.Fecha_Marcaje.ToString("dddd");
+				//Parametros de los horarios
+				ShiftAssingEmployeeRow hfp = ObtenerParametrosHorarios(shiftf, indexday);
                 //todos los calculos se hacen si el empleado tiene asignado un horario
                 if (Convert.ToInt16(item.Hora_Entrada) != 0 && Convert.ToInt16(item.Hora_Salida) != 0) 
                 {
                     //Escala1
                     DateTime escala1_date1 = new(item.Fecha_Marcaje.Year,
-                    item.Fecha_Marcaje.Month, item.Fecha_Marcaje.Day, Convert.ToInt16(hfp.Cal1_Start), 0, 0);
+                    item.Fecha_Marcaje.Month, item.Fecha_Marcaje.Day, Convert.ToInt16(hfp.Cal1_Start_hour), 0, 0);
                     DateTime escala1_date2 = new(item.Fecha_Marcaje.Year,
-                    item.Fecha_Marcaje.Month, item.Fecha_Marcaje.Day, Convert.ToInt16(hfp.Cal1_End), 0, 0);
+                    item.Fecha_Marcaje.Month, item.Fecha_Marcaje.Day, Convert.ToInt16(hfp.Cal1_End_hour), 0, 0);
                     int escala1_factor = Convert.ToInt16(hfp.Cal1_Factor);
                     TimeSpan escala1_horas = escala1_date2 - escala1_date1;
-                    item.Escala1_titulo = hfp.Cal1_Start + "-" + hfp.Cal1_End + "-" + hfp.Cal1_Factor + "%";
+                    item.Escala1_titulo = hfp.Cal1_Start_hour + "-" + hfp.Cal1_End_hour + "-" + hfp.Cal1_Factor + "%";
                     //Escala2
                     DateTime escala2_date1 = new(item.Fecha_Marcaje.Year,
                     item.Fecha_Marcaje.Month, item.Fecha_Marcaje.Day, Convert.ToInt16(hfp.Cal2_Start), 0, 0);
@@ -575,9 +620,9 @@ namespace DataFlowRRHH.Service
                     if (item.Mark4_Dt > escala1_date1) 
                     {
                         TimeSpan het = (DateTime)item.Mark4_Dt - escala1_date1;
-                        Boolean run;
-                        // Condiciones del primer nivel.
-                        if (het >= escala1_horas)
+						Boolean run;
+						// Condiciones del primer nivel.
+						if (het >= escala1_horas)
                         {
                             item.horas_escala1 =  escala1_horas.TotalHours;
                             item.pesos_escala1 = Math.Round((((item.Salario * escala1_factor) / 100) * item.horas_escala1), 2, MidpointRounding.AwayFromZero);
@@ -653,19 +698,25 @@ namespace DataFlowRRHH.Service
             {
                 Connection = micomm,
                 CommandType = CommandType.Text,
-                CommandText = "SELECT b.IdUser,c.Name,a.ShiftId,DayId,description,type,t2inhour,t2outhour," +
-            "t2overtime1beginhour,t2overtime1endhour,t2overtime1factor,t2overtime2beginhour,t2overtime2endhour," +
-            "t2overtime2factor,t2overtime3beginhour,t2overtime3endhour,t2overtime3factor,t2overtime4beginhour," +
-            "t2overtime4endhour,t2overtime4factor,t2overtime5beginhour,t2overtime5endhour,t2overtime5factor " +
-            "FROM [BDBioAdminSQL].[dbo].[ShiftDetail] a left join [BDBioAdminSQL].[dbo].[UserShift] b " +
-            "on a.ShiftId = b.ShiftId left join [BDBioAdminSQL].[dbo].[User] c on c.IdUser = b.IdUser " +
-            "where a.ShiftId=@p1 and DayId=@p2 order by DayId"
-            };
+                CommandText = "select a.ShiftId,b.Description,a.DayId," +
+				"dia_letra = case when DayId = 0 then 'lunes' when DayId = 1 then 'martes' " +
+				"when DayId = 2 then 'miercoles' when DayId = 3 then 'jueves' when DayId = 4 then 'viernes'" +
+				"when DayId = 5 then 'sabado' when DayId = 6 then 'domingo' end," +
+                "a.T2OverTime1BeginHour as escala1_entrada_hora," +
+                "a.T2OverTime1BeginMinute as escala1_entrada_minutos," + 
+                "a.T2OverTime1EndHour as escala1_salida_hora," +
+                "a.T2OverTime1EndMinute as escala1_salida_minutos," +
+                "a.T2OverTime1Factor as factor_pago," + 
+                "a.T2EndOverTime1 escala_activa, " +
+				"a.T2InHour, a.T2OutHour " +
+				"from ShiftDetail a " +
+				"left join Shift b on b.ShiftId = a.ShiftId " +
+				"where a.ShiftId = @p1 and a.DayId = @p2"
+			};
             SqlParameter p1 = new("@p1", shiftid);
             SqlParameter p2 = new("@p2", dayid);
             comando.Parameters.Add(p1);
             comando.Parameters.Add(p2);
-            micomm.Open();
             comando.ExecuteNonQuery();
             SqlDataAdapter da = new();
             DataTable dt = new();
@@ -676,23 +727,25 @@ namespace DataFlowRRHH.Service
             {
                 hfp.Jornada_Start = dt.Rows[0]["t2inhour"].ToString()!;
                 hfp.Jornada_End = dt.Rows[0]["t2outhour"].ToString()!;
-                hfp.Cal1_Start = dt.Rows[0]["t2overtime1beginhour"].ToString()!;
-                hfp.Cal1_End = dt.Rows[0]["t2overtime1endhour"].ToString()!;
-                hfp.Cal1_Factor = dt.Rows[0]["t2overtime1factor"].ToString()!;
-                hfp.Cal2_Start = dt.Rows[0]["t2overtime2beginhour"].ToString()!;
-                hfp.Cal2_End = dt.Rows[0]["t2overtime2endhour"].ToString()!;
-                hfp.Cal2_Factor = dt.Rows[0]["t2overtime2factor"].ToString()!;
-                hfp.Cal3_Start = dt.Rows[0]["t2overtime3beginhour"].ToString()!;
-                hfp.Cal3_End = dt.Rows[0]["t2overtime3endhour"].ToString()!;
-                hfp.Cal3_Factor = dt.Rows[0]["t2overtime3factor"].ToString()!;
-                hfp.Cal4_Start = dt.Rows[0]["t2overtime4beginhour"].ToString()!;
-                hfp.Cal4_End = dt.Rows[0]["t2overtime4endhour"].ToString()!;
-                hfp.Cal4_Factor = dt.Rows[0]["t2overtime4factor"].ToString()!;
-                hfp.Cal5_Start = dt.Rows[0]["t2overtime5beginhour"].ToString()!;
-                hfp.Cal5_End = dt.Rows[0]["t2overtime5endhour"].ToString()!;
-                hfp.Cal5_Factor = dt.Rows[0]["t2overtime5factor"].ToString()!;
+                hfp.Active_Escala1 = Convert.ToBoolean(dt.Rows[0]["escala_activa"]);
+                hfp.Cal1_Start_hour = dt.Rows[0]["escala1_entrada_hora"].ToString()!;
+				hfp.Cal1_Start_minute = dt.Rows[0]["escala1_entrada_minutos"].ToString()!;
+				hfp.Cal1_End_hour = dt.Rows[0]["escala1_salida_hora"].ToString()!;
+				hfp.Cal1_End_minute = dt.Rows[0]["escala1_salida_minutos"].ToString()!;
+				hfp.Cal1_Factor = dt.Rows[0]["factor_pago"].ToString()!;
+                //hfp.Cal2_Start = dt.Rows[0]["t2overtime2beginhour"].ToString()!;
+                //hfp.Cal2_End = dt.Rows[0]["t2overtime2endhour"].ToString()!;
+                //hfp.Cal2_Factor = dt.Rows[0]["t2overtime2factor"].ToString()!;
+                //hfp.Cal3_Start = dt.Rows[0]["t2overtime3beginhour"].ToString()!;
+                //hfp.Cal3_End = dt.Rows[0]["t2overtime3endhour"].ToString()!;
+                //hfp.Cal3_Factor = dt.Rows[0]["t2overtime3factor"].ToString()!;
+                //hfp.Cal4_Start = dt.Rows[0]["t2overtime4beginhour"].ToString()!;
+                //hfp.Cal4_End = dt.Rows[0]["t2overtime4endhour"].ToString()!;
+                //hfp.Cal4_Factor = dt.Rows[0]["t2overtime4factor"].ToString()!;
+                //hfp.Cal5_Start = dt.Rows[0]["t2overtime5beginhour"].ToString()!;
+                //hfp.Cal5_End = dt.Rows[0]["t2overtime5endhour"].ToString()!;
+                //hfp.Cal5_Factor = dt.Rows[0]["t2overtime5factor"].ToString()!;
             }
-            micomm.Close();
             return hfp;
         }
         public double ObtenerSalarioxHora(int userid)

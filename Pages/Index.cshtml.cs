@@ -58,9 +58,13 @@ namespace DataFlowRRHH.Pages
 
         public IndexModel(IServiceGestion _ServiceGestion,IConfiguration _configuracion)
         {
-            ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
-            FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
-            ServiceGestion = _ServiceGestion;
+            //ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
+            //FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
+
+			ToDate = new DateTime(2023, 12, 1, 6, 0, 0);
+			FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
+
+			ServiceGestion = _ServiceGestion;
             configuracion = _configuracion;
         }
 
@@ -75,6 +79,11 @@ namespace DataFlowRRHH.Pages
             //calculo de las horas extras.
             Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches,Feriados);
           
+        }
+        public async Task<JsonResult> OnPostLoadPonches() 
+        {
+            ListaPonches = await ServiceGestion.LoadHuellasEmpleados(ToDate, FromDate);
+            return new JsonResult(ListaPonches);
         }
 
         public async Task<FileContentResult> OnPostRunReports()

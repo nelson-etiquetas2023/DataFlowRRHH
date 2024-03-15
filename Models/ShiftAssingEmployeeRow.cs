@@ -4,9 +4,12 @@
     {
         public string Jornada_Start { get; set; } = string.Empty;
         public string Jornada_End { get; set; } = string.Empty;
-        public string Cal1_Start { get; set; } = string.Empty;
-        public string Cal1_End { get; set; } = string.Empty;
-        public string Cal1_Factor { get; set; } = string.Empty;
+        public Boolean Active_Escala1 { get; set; } = false;
+        public string Cal1_Start_hour { get; set; } = string.Empty;
+		public string Cal1_Start_minute { get; set; } = string.Empty;
+		public string Cal1_End_hour { get; set; } = string.Empty;
+		public string Cal1_End_minute { get; set; } = string.Empty;
+		public string Cal1_Factor { get; set; } = string.Empty;
         public string Cal2_Start { get; set; } = string.Empty;
         public string Cal2_End { get; set; } = string.Empty;
         public string Cal2_Factor { get; set; } = string.Empty;

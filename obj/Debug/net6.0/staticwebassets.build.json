@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "z6EQXvFT7nHZxb1Mhmh3m1lZS7JW/8H10Hd+w7c5JOQ=",
+  "Hash": "58e9rehhGtAmpS3YeBtpowgYXNIpUwq+c3b/EElzyS8=",
   "Source": "DataFlowRRHH",
   "BasePath": "_content/DataFlowRRHH",
   "Mode": "Default",
@@ -205,6 +205,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\process.png"
+    },
+    {
+      "Identity": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\js\\ModulosJS.js",
+      "SourceId": "DataFlowRRHH",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\",
+      "BasePath": "_content/DataFlowRRHH",
+      "RelativePath": "js/ModulosJS.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\ModulosJS.js"
     },
     {
       "Identity": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\js\\site.js",

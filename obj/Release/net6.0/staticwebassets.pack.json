@@ -37,6 +37,10 @@
       "PackagePath": "staticwebassets\\images\\process.png"
     },
     {
+      "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\js\\ModulosJS.js",
+      "PackagePath": "staticwebassets\\js\\ModulosJS.js"
+    },
+    {
       "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

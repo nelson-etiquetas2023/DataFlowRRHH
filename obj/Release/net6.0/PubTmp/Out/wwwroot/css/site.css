@@ -28,6 +28,10 @@ body {
     background-color: #fbc71e !important
 }
 
+.RedAusencia {
+    background-color: #F30000 !important
+}
+
 table.dataTable td {
     font-size: 1em;
 }
@@ -35,3 +39,4 @@ table.dataTable td {
 table.dataTable tr.dtrg-level-0 td {
     font-size: .8em;
 }
+

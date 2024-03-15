@@ -37,7 +37,8 @@ namespace DataFlowRRHH.Models
         public Boolean Feriado { get; set; }
         public Boolean DayFree { get; set; }
         public int IndexDay { get; set; } = 0;
-        public double Horas_Extras { get; set; }
+        public double Horas_Extras { get; set; } = 0;
+        public string he_string { get; set; } = ""; 
         public decimal sueldo_hora  { get; set; }
         public double factor { get; set; }
         public double fr_sueldo { get; set; }
