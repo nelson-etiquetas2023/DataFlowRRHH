@@ -13,6 +13,7 @@ namespace DataFlowRRHH.Models
         public string Mark2 { get; set; } = null!;
         public string Mark3 { get; set; } = null!;
         public string Mark4 { get; set; } = null!;
+        public int Tardanza_Entrada { get; set; } = 0;
         public DateTime? Mark1_Dt { get; set; }
         public DateTime? Mark2_Dt { get; set; }
         public DateTime? Mark3_Dt { get; set; }
@@ -30,8 +31,6 @@ namespace DataFlowRRHH.Models
         public int Start_journal_minutes { get; set; } = 0;
         public int End_journal_minutes { get; set; } = 0;
         public int End_journal { get; set; } = 0;
-        public bool Tardanza_entrada_jornada { get; set; } = false;
-        public Boolean Tardanza_almuerzo_jornada { get; set; } = false;
         public double Lapso_tardanza_entrada { get; set; } = 0;
         public double Lapso_tardanza_almuerzo { get; set; } = 0;
         public Boolean Feriado { get; set; }

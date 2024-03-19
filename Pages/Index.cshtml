@@ -184,6 +184,13 @@
                   <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="yellowforce"></div> 
                    <span class="badge bg-secondary" style="margin-left:20px"> Dia Ausencia </span>
                   <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="RedAusencia"></div>
+
+
+                  <form method="post">
+                      <button class="btn btn-primary" asp-page-handler="SendEmail">Enviar Email</button>
+                  </form>
+
+                  
             </div>
          </div>
     </div>
@@ -206,6 +213,7 @@
                         <th>Ent</th>
                         <th>Sal</th>
                         <th>M1</th>
+                        <th>Te</th>
                         <th>M2</th>
                         <th>M3</th>
                         <th>M4</th>
@@ -255,6 +263,9 @@
                         </td>
                         <td>
                             @item.Mark1 
+                        </td>
+                        <td>
+                            @item.Tardanza_Entrada
                         </td>
                         <td>
                             @item.Mark2 
@@ -467,14 +478,19 @@
             let tableHoraExtras = new DataTable('#TableHorasExtras', {
                 "processing": false,
                 order: [[1, "asc"]],
+
+
                 rowGroup: {
                     startRender : null,
-                    endRender: function (rows, group) { 
-                       
+                    endRender: function (rows, group) {
+
+                        let totalTardanzasEntrada = 0;
+
                         let totalHorasEx = rows
                             .data()
                             .pluck(15)
                             .reduce((a, b) => a + parseFloat(b), 0); 
+                        
                             
                         let totalMontoex = rows
                             .data()
@@ -493,8 +509,6 @@
 
                         let tr = document.createElement("tr");
 
-                       
-                       
                         var dayfree = rows
                         .data()
                         .pluck(5)[0];
@@ -505,12 +519,13 @@
                         if (dayfree.includes(cadena) || dayfree.includes(cadena.toUpperCase())) { 
                             descanso='Descanso: 1 dia Completo.'
                         } 
+
                         if (dayfree.includes('1/2 DIA')) { 
                             descanso='Descanso: 1/2 dia.'
                         } 
 
-                        addCell(tr,group + ' - ' + descanso, 14);
-
+                        addCell(tr,group + ' - ' + descanso, 9);
+                        addCell(tr, totalTardanzasEntrada.toFixed(2));
                         addCell(tr, totalHorasEx.toFixed(2));
                         addCell(tr, "");
                         addCell(tr, "");

@@ -108,11 +108,9 @@ namespace DataFlowRRHH.Service
                 End_journal_hour = x.Horario.Select(g => g.end_journal_hour).FirstOrDefault(),
                 End_journal_minutes = x.Horario.Select(g => g.end_journal_minutes).FirstOrDefault(),
 
-            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate && f.IdUser == 11).OrderBy(f => f.RecordTime);
+            }).Where(f => f.RecordTime >= ToDate && f.RecordTime <= FromDate).OrderBy(f => f.RecordTime);
 
             //prueba para agregar una fila.
-           
-
             return ListaPonches = await ponches.ToListAsync();
         }
 
@@ -174,11 +172,21 @@ namespace DataFlowRRHH.Service
             //-----------------------------------//
             foreach (var item in jornadas) 
             {
+				//Calculo de la tardanza en la entrada.
+				DateTime dtShiftStart = new(item.Fecha.Year, item.Fecha.Month,
+					item.Fecha.Day, item.ShiftStart.Hours, item.ShiftStart.Minutes, 0);
 
-                //buscar los parametros de los horarios.
-                ShiftAssingEmployeeRow params_shift = ObtenerParametrosHorarios(item.IdShift, item.IndexDay);
+				DateTime dtMark1 = new(item.Fecha.Year, item.Fecha.Month,
+					item.Fecha.Day, item.ShiftStart.Hours, item.ShiftStart.Minutes, 0);
 
-                
+                TimeSpan tsTardanzaEntrada = ((DateTime)item.Mark1_Dt! - dtShiftStart);
+
+                int TimeWaitShiftStart = 15;
+
+                item.Tardanza_Entrada = tsTardanzaEntrada.Minutes >= TimeWaitShiftStart ? tsTardanzaEntrada.Minutes : 0;
+
+				//buscar los parametros de los horarios.
+				ShiftAssingEmployeeRow params_shift = ObtenerParametrosHorarios(item.IdShift, item.IndexDay);
 
                 //asignar la entrada y salida del horario asignado hour_in // hour_out x dia en horario
                 int[] values_shifth_start_end_day = StartEndDayShift(item.IdShift, item.IndexDay, item.Fecha);
@@ -196,19 +204,18 @@ namespace DataFlowRRHH.Service
                     item.factor = 0;
                 }
                 
-
                 //dia de la semana español
                 item.DiaSemana = ConverirDiaSemanaEspañol(item.DiaSemana);
 
                 // Calculo de Horas Extras
-                
+
                 DateTime dtEndShift = new(item.Fecha.Year, item.Fecha.Month,
                     item.Fecha.Day, item.ShiftEnd.Hours, item.ShiftEnd.Minutes,0);
 
                 DateTime dtLastMark = item.Mark4_Dt == null ? new DateTime(item.Fecha.Year,1,1,0,0,0) :
                     (DateTime) item.Mark4_Dt;
 
-                int WaitMinutes = -10;
+                int WaitMinutes = -15;
 
                 TimeSpan ts = (dtLastMark - dtEndShift).TotalMilliseconds < 0 ? 
                     new TimeSpan(0,0,0) : (dtLastMark.Add(new TimeSpan(0, WaitMinutes, 0)) - dtEndShift);
@@ -221,8 +228,7 @@ namespace DataFlowRRHH.Service
 
                 item.Horas_Extras = Math.Round(((hours + minutes) / 60),2,MidpointRounding.AwayFromZero);
                 
-                
-    
+             
                 //Validar horas extras.
                 if (item.Horas_Jornada == 0 || item.Horas_Extras < 0 
                     || item.ShiftName==null || item.Ponches > 5) 

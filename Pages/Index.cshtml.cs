@@ -2,8 +2,11 @@
 using DataFlowRRHH.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 
 namespace DataFlowRRHH.Pages
@@ -46,7 +49,9 @@ namespace DataFlowRRHH.Pages
         private List<CampoHorasExtras> FileReportHorasExtras { get; set; } = new();
 
         public IServiceGestion ServiceGestion { get; set; }
+        
 
+        public Email email { get; set; }
 
         //checkbox de los formatos de reporte.
         [BindProperty]
@@ -58,11 +63,11 @@ namespace DataFlowRRHH.Pages
 
         public IndexModel(IServiceGestion _ServiceGestion,IConfiguration _configuracion)
         {
-            //ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
-            //FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
+            ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
+            FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
 
-			ToDate = new DateTime(2023, 12, 1, 6, 0, 0);
-			FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
+			//ToDate = new DateTime(2023, 12, 1, 6, 0, 0);
+			//FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
 
 			ServiceGestion = _ServiceGestion;
             configuracion = _configuracion;
@@ -80,12 +85,218 @@ namespace DataFlowRRHH.Pages
             Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches,Feriados);
           
         }
+        public async Task OnPostSendEmailAsync() 
+        {
+            
+            //email test
+            Email emailTest = new Email
+            {
+                From = "devsoftware.etiquetas@gmail.com",
+                To = "test.etiquetas@gmail.com",
+                Subject = "SISTEMA CONTROL DE ASISTENCIA - Reporte de Tardanzas: " + DateTime.Now,
+                Body = @"
+                <html lang=""es"">
+                    <head>    
+                        <meta content=""text/html; charset=utf-8"" http-equiv=""Content-Type"">
+                        <title>
+                            Reportes - Dataflow
+                        </title>
+                        <style type=""text/css"">
+                            HTML{background-color: #e8e8e8;}
+                            .courses-table{font-size: 12px; padding: 3px; border-collapse: collapse; border-spacing: 0;}
+                            .courses-table .description{color: #505050;}
+                            .courses-table thead tr:nth-child(even){background-color: #D3F7B9;}
+                            .courses-table td{border: 1px solid #D1D1D1; background-color: #F3F3F3; padding: 0 10px;}
+                            .courses-table th{border: 1px solid #424242; color: #FFFFFF;text-align: left; padding: 0 10px;}
+                            .green{background-color: #6B9852;}
+                            .cell-tar{font-weight: bold;text-align: center;}
+                            tr:nth-child(even){background-color: #D3F7B9;}
+                        </style>
+                    </head>
+                    <body>
+                       <h1>Sistema Control de Asistencia.</h1>
+                       <h4>Empresa : Tienda la Bomba. Sucursal Santo Domingo</h4>
+                       </br>
+                       <h3>Fecha reporte: </h3>" + DateTime.Now + @"   
+                       <h3>Reporte de Tardanzas</h3>
+                        <h4>Periodo de Fecha:  [Desde: 01-03-2024 Hasta: 15-03-2024]</h4>
+                       <table class=""courses-table"">
+                            <thead>
+                                <tr>
+                                    <th class=""green"">It.</th>
+                                    <th class=""green"">Id Empleado</th>
+                                    <th class=""green"">Nombre de Empleado</th>
+                                    <th class=""green"">Fecha</th>
+                                    <th class=""green"">Ponche Entrada</th>
+                                    <th class=""green"">Tardanza (Min)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class=""description"">1</td>
+                                    <td>1255</td>
+                                    <td>Nelson Pino</td>
+                                    <td>01-03-2024</td>
+                                    <td>9:21 a.m.</td>
+                                    <td class=""cell-tar"">21 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">2</td>
+                                    <td>0054</td>
+                                    <td>Rosa Martinez</td>
+                                    <td>01-03-2024</td>
+                                    <td>9:18 a.m.</td>    
+                                    <td class=""cell-tar"">18 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">3</td>
+                                    <td>1734</td>
+                                    <td>Ana Minaya</td>
+                                    <td>02-03-2024</td>
+                                    <td>9:27 a.m.</td>    
+                                    <td class=""cell-tar"">27 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">4</td>
+                                    <td>6701</td>
+                                    <td>Juan Carlos Rojas</td>
+                                    <td>03-03-2024</td>
+                                    <td>9:31 a.m.</td>    
+                                    <td class=""cell-tar"">31 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">5</td>
+                                    <td>8174</td>
+                                    <td>Janet Peña</td>
+                                    <td>03-03-2024</td>
+                                    <td>9:37 a.m.</td>    
+                                    <td class=""cell-tar"">37 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">6</td>
+                                    <td>8501</td>
+                                    <td>Milagros Lopez</td>
+                                    <td>02-03-2024</td>
+                                    <td>9:41 a.m.</td>    
+                                    <td class=""cell-tar"">41 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">7</td>
+                                    <td>8501</td>
+                                    <td>Juan Pablos Torres</td>
+                                    <td>05-03-2024</td>
+                                    <td>9:38 a.m.</td>    
+                                    <td class=""cell-tar"">38 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">8</td>
+                                    <td>1104</td>
+                                    <td>Rodolfo Hernandez</td>
+                                    <td>06-03-2024</td>
+                                    <td>9:18 a.m.</td>    
+                                    <td class=""cell-tar"">18 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">9</td>
+                                    <td>1104</td>
+                                    <td>Rodolfo Hernandez</td>
+                                    <td>06-03-2024</td>
+                                    <td>9:18 a.m.</td>    
+                                    <td class=""cell-tar"">18 min.</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">10</td>
+                                    <td>1104</td>
+                                    <td>Rodolfo Hernandez</td>
+                                    <td>06-03-2024</td>
+                                    <td>9:18 a.m.</td>    
+                                    <td class=""cell-tar"">18 min.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h4>* Se considera tardanza a los empleados que marquen 15 minutos porterior
+                              a la hora de entrada establecida para su jornada diaria</h4>
+                        </br>
+                        <h3>Resumen de Emplados con mas Tardanzas</h3>
+                        <table class=""courses-table"">
+                            <thead>
+                                <tr>
+                                    <th class=""green"">It.</th>
+                                    <th class=""green"">Id Empleado</th>
+                                    <th class=""green"">Nombre de Empleado</th>
+                                    <th class=""green"">Numero Tardanzas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class=""description"">1</td>
+                                    <td>1255</td>
+                                    <td>Rodolfo Hernandez</td>
+                                    <td class=""cell-tar"">3</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">2</td>
+                                    <td>0054</td>
+                                    <td>Nelson Pino</td>
+                                    <td class=""cell-tar"">1</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td class=""description"">3</td>
+                                    <td>1734</td>
+                                    <td>Milagros Lopez</td>
+                                    <td class=""cell-tar"">1</td>
+                                </tr>
+                                <tr>
+                                    <td class=""description"">4</td>
+                                    <td>6701</td>
+                                    <td>Ana minaya</td>
+                                    <td class=""cell-tar"">1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+
+                        <h4>Departamento de Sistemas:</h4> 
+                        <p>Correo: devsoftware.etiquetas@gmail.com</p>
+                        <p>Telefono Contacto: 826-9550-10</p>
+                        <p>Etiquetas.com.do</p>
+
+                    </body>
+                </html>"
+            };
+            using (var smtp = new SmtpClient("smtp.gmail.com",587)) 
+            {
+                //parametros protocolo smtp
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+                //smtp.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+                //smtp.PickupDirectoryLocation = @"c:\Mymails";
+
+                //mensaje 
+                var msg = new MailMessage
+                {
+                    Body = emailTest.Body,
+                    Subject = emailTest.Subject,
+                    From = new MailAddress(emailTest.From),
+                    IsBodyHtml = true
+                };
+                msg.To.Add(emailTest.To);
+
+                //credenciales
+                NetworkCredential nc = new NetworkCredential("devsoftware.etiquetas@gmail.com", "spmg ejwa qqdg znoy");
+                //smtp.UseDefaultCredentials = true;
+                smtp.Credentials = nc;
+                await smtp.SendMailAsync(msg);
+            }             
+        }
         public async Task<JsonResult> OnPostLoadPonches() 
         {
             ListaPonches = await ServiceGestion.LoadHuellasEmpleados(ToDate, FromDate);
             return new JsonResult(ListaPonches);
         }
-
         public async Task<FileContentResult> OnPostRunReports()
         {
 
