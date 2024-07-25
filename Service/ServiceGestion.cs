@@ -172,6 +172,14 @@ namespace DataFlowRRHH.Service
             //-----------------------------------//
             foreach (var item in jornadas) 
             {
+                //verificar cuando sean solamente dos ponches
+                if (item.Ponches == 2) 
+                {
+                    item.Mark4 = item.Mark2;
+	            	item.Mark2 = "";
+                    item.Mark4_Dt = item.Mark2_Dt;
+				}
+
 				//Calculo de la tardanza en la entrada.
 				DateTime dtShiftStart = new(item.Fecha.Year, item.Fecha.Month,
 					item.Fecha.Day, item.ShiftStart.Hours, item.ShiftStart.Minutes, 0);
@@ -180,10 +188,11 @@ namespace DataFlowRRHH.Service
 					item.Fecha.Day, item.ShiftStart.Hours, item.ShiftStart.Minutes, 0);
 
                 TimeSpan tsTardanzaEntrada = ((DateTime)item.Mark1_Dt! - dtShiftStart);
-
+                 
                 int TimeWaitShiftStart = 15;
 
-                item.Tardanza_Entrada = tsTardanzaEntrada.Minutes >= TimeWaitShiftStart ? tsTardanzaEntrada.Minutes : 0;
+                item.Tardanza_Entrada = tsTardanzaEntrada.Minutes >= TimeWaitShiftStart ?
+                    Math.Round(tsTardanzaEntrada.TotalMinutes,2) : 0;
 
 				//buscar los parametros de los horarios.
 				ShiftAssingEmployeeRow params_shift = ObtenerParametrosHorarios(item.IdShift, item.IndexDay);
@@ -215,7 +224,7 @@ namespace DataFlowRRHH.Service
                 DateTime dtLastMark = item.Mark4_Dt == null ? new DateTime(item.Fecha.Year,1,1,0,0,0) :
                     (DateTime) item.Mark4_Dt;
 
-                int WaitMinutes = -15;
+                int WaitMinutes = 0;
 
                 TimeSpan ts = (dtLastMark - dtEndShift).TotalMilliseconds < 0 ? 
                     new TimeSpan(0,0,0) : (dtLastMark.Add(new TimeSpan(0, WaitMinutes, 0)) - dtEndShift);
@@ -420,7 +429,15 @@ namespace DataFlowRRHH.Service
                         //los que descansas medio dia.
                         if (journal.Tipo_Descanso == "medio dia.")
                         {
-                            UpdateCalculateListDomingos(journal, jornadas);
+                            // el primer domingo no se paga.
+                            if (numDomingos >= 3) 
+                            {
+                                UpdateCalculateListDomingos(journal, jornadas);
+
+
+                            }
+
+                            //UpdateCalculateListDomingos(journal, jornadas);
                         }
                     }
                 }
@@ -843,42 +860,30 @@ namespace DataFlowRRHH.Service
         public List<Feriado> GetDataFeriados() 
         {
             
-            DataTable dt1 = new();
-            DataTable dt2 = new();
-
-
-
-            //comando sql para traer los empleados del bioadmin.
-            dt1.Clear();
-            dt2.Clear();
-
+            //Codigo para traer los datos de los dias feriados
+            DataTable dt = new();
+            dt.Clear();
+            
             SqlCommand comando = new()
             {
                 Connection = micomm,
                 CommandType = CommandType.Text
             };
-
-            //query1
+            
             comando.CommandText = comando.CommandText = "select IdException,BeginingDate,EndingDate,Description,Comment,IdDepartment,IdUser,PaymentType,PaymentFactor,Recurring from Exception";
             micomm.Open();
-            comando.ExecuteNonQuery();
-            SqlDataAdapter da1 = new()
-            {
-                SelectCommand = comando
-            };
-            da1.Fill(dt1);
-            //query2
-            comando.CommandText = comando.CommandText = "select IdException,BeginingDate,EndingDate,Description,Comment,IdDepartment,CAST(IdUser AS char) as iduser,PaymentType,PaymentFactor,Recurring from Exception";
-            comando.ExecuteNonQuery();
-            SqlDataAdapter da2 = new()
-            {
-                SelectCommand = comando
-            };
-            da2.Fill(dt2);
-            List<Feriado> lista1 = new();
-            List<Feriado> lista2 = new();
 
-            lista1 = dt1.AsEnumerable().Select(x => new Feriado
+            comando.ExecuteNonQuery();
+
+            SqlDataAdapter da = new()
+            {
+                SelectCommand = comando
+            };
+            da.Fill(dt);
+            
+            List<Feriado> lista = new();
+            
+            lista = dt.AsEnumerable().Select(x => new Feriado
             {
                 Id = x.Field<int>("IdException"),
                 Description = x.Field<string>("Description")!,
@@ -887,28 +892,12 @@ namespace DataFlowRRHH.Service
                 Type = x.Field<int>("PaymentType"),
                 Factor = x.Field<int>("PaymentFactor"),
                 Depart = x.Field<int>("IdDepartment"),
-                Employee =  x.Field<string>("IdUser"),
-                comment = x.Field<string>("Comment"),
+                Employee =  x.Field<int>("IdUser"),
+                Comment = x.Field<string>("Comment"),
                 Recurrente = x.Field<Boolean>("Recurring")
             }).ToList();
 
-            lista2 = dt2.AsEnumerable().Select(x => new Feriado
-            {
-                Id = x.Field<int>("IdException"),
-                Description = x.Field<string>("Description")!,
-                DateStart = x.Field<DateTime>("BeginingDate"),
-                DateEnd = x.Field<DateTime>("EndingDate"),
-                Type = x.Field<int>("PaymentType"),
-                Factor = x.Field<int>("PaymentFactor"),
-                Depart = x.Field<int>("IdDepartment"),
-                Employee = x.Field<string>("IdUser"),
-                comment = x.Field<string>("Comment"),
-                Recurrente = x.Field<Boolean>("Recurring")
-            }).ToList();
-
-            return lista1.Concat(lista2).ToList();
-
-
+            return lista;
 
         }
     }

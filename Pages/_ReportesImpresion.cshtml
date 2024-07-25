@@ -1,0 +1,31 @@
+﻿@model IndexModel
+<!--Cuadro de Impresion-->
+<div class="col-3 border" style="margin-left:10px">
+    <div class="alert alert-success py-2 my-4" role="alert">
+        <img src="images/process.png" style="margin-right:20px" />
+        Imprimir y Exportar:
+    </div>
+    <strong>Seleccione el tipo de Documento:</strong>
+    <!--Fourmulario de reportes-->
+    <form method="post" class="container my-4" style="display:flex; flex-direction:column;justify-content:space-around">
+        <div class="form-check">
+            <input class="form-check-input" name="FormatoDoc" value="pdf" type="radio" id="FormatoDoc" checked asp-for="FormatoDoc">
+            <label class="form-check-label" for="FormatoDoc">
+                Ver en <strong>Pdf.</strong>
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" name="FormatoDoc" type="radio" value="excel" id="FormatoDoc" asp-for="FormatoDoc">
+            <label class="form-check-label" for="FormatoDoc">
+                Exportar a <strong>Excel.</strong>
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" name="FormatoDoc" type="radio" value="word" id="FormatoDoc" asp-for="FormatoDoc">
+            <label class="form-check-label" for="FormatoDoc">
+                Exportar a <strong>Word.</strong>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-primary" asp-page-handler="RunReports" style="margin-top:25px"><i class="bi bi-printer"></i> Imprimir</button>
+    </form>
+</div>

@@ -17,18 +17,22 @@ function getDataSrc(dt) {
     return dataSrc;
 }
 function updateSheet1(xlsx, groupName, title, button, dt) {
-    // console.log('updateSheet', groupName);
+    
     // Get number of columns to remove last hidden index column.
     var numColumns = dt.columns().header().count();
+    
     var newSheet =
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac" mc:Ignorable="x14ac">' +
         getTableData(groupName, title, button, dt) +
         "</worksheet>";
 
+    
+
+
     // Get sheet.
     var sheet = (xlsx.xl.worksheets["sheet1.xml"] = $.parseXML(newSheet));
-
+    
 
     // if (Array.isArray(groupName)) {
     //   setSheetName(
@@ -64,6 +68,31 @@ function getTableData(groupName, title, button, dt) {
     //----------------
     var dataSrc = getDataSrc(dt);
     var header = getHeaderNames(dt);
+
+    header[0] = "Fila num.";
+    header[1] = "Id. Empleado";
+    header[2] = "Nombre del Empleado";
+    header[5] = "Descripcion del Horario Asignado";
+    header[6] = "Horario Entrada";
+    header[7] = "Horario Salida";
+    header[8] = "Marcaje1";
+    header[9] = "Tardanza Entrada (min.)";
+    header[10] = "Marcaje2";
+    header[11] = "Marcaje3";
+    header[12] = "Marcaje4";
+    header[13] = "Ponches.";
+    header[14] = "Horas Trabajadas";
+    header[15] = "Horas Extras (Minutos)";
+    header[16] = "Horas Extras (Horas)";
+    header[17] = "sueldo Hora";
+    header[18] = "% Calculo Hora Extra";
+    header[19] = "Fraccion-Sueldo";
+    header[20] = "Monto Extras";
+    header[21] = "Horas Extras 100";
+    header[22] = "Monto Extra 100";
+    header[23] = "";
+    header[24] = "";
+
     var rowNum = 1;
     var mergeCells = [];
     var mergeCol = (header.length - 1 + 10).toString(36).toUpperCase();
@@ -113,9 +142,17 @@ function getTableData(groupName, title, button, dt) {
         var currentGroup = "";
         let fil = 0;
         // Loop through each row to append to sheet.
+        tg_tardanzas = 0;
+        tg_horasextras_min = 0;
+        tg_montoheporc = 0;
+        tg_montohex100 = 0;
+        tg_montoHorasExal100 = 0;
+
         dt.rows(selectorModifier).every(function (rowIdx, tableLoop, rowLoop) {
             fil++;
             var data = this.data();
+            
+          
             if (data[dataSrc] !== currentGroup) {
 
                 //agregar la fila del grupo  
@@ -126,6 +163,11 @@ function getTableData(groupName, title, button, dt) {
                 montoHe = 0;
                 monto100 = 0;
                 thoras100 = 0;
+                ntardaGroup = 0;
+                horasex = 0;
+                montoExtra100 = 0;
+                horasExtrasAl100 = 0;
+             
                 rowNum++;
             }
             //Aqui se hacen los calculos para totalizar.
@@ -134,13 +176,29 @@ function getTableData(groupName, title, button, dt) {
                 horasLab += parseFloat(data[13]);
                 montoHe += parseFloat(data[20]);
                 monto100 += parseFloat(data[22]);
-                thoras100 += parseFloat(data[21])
+                thoras100 += parseFloat(data[21]);
+                horasex += parseFloat(data[16]);
+                horasExtrasAl100 += parseFloat(data[23]);
+
+
+                montoExtra100 += parseFloat(data[24]);
+                tg_horasextras_min += parseFloat(data[16]);
+                tg_montoheporc += parseFloat(data[22]);
+                tg_montohex100 += parseFloat(data[23]);
+                tg_montoHorasExal100 += parseFloat(data[24]);
+                //Esta funcion cuenta las tardanzas por empleado en la hoja de excel
+                if (parseFloat(data[9]) >= 15)
+                {
+                    ntardaGroup += 1;
+                    tg_tardanzas += 1;
+                }
+
                 //totales generales
                 tgeneralHe += parseFloat(data[14]);
                 tghorasLab += parseFloat(data[13]);
                 tgmontoHe += parseFloat(data[20]);
-                tgmonto100 += parseFloat(data[22]);
-                tghoras100 += parseFloat(data[21]);
+                //tgmonto100 += parseFloat(data[22]);
+               
             }
 
             // If data is object based then it needs to be converted
@@ -151,29 +209,38 @@ function getTableData(groupName, title, button, dt) {
             data[9] = data[9].replaceAll('&nbsp;', '');
             data[10] = data[10].replaceAll('&nbsp;', '');
             data[11] = data[11].replaceAll('&nbsp;', '');
+            data[12] = data[12].replaceAll('&nbsp;', '');
+
             ws += buildRow([fil, data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8],
-                data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], data[17], data[18],
-                data[19], data[20], data[21], data[22]], rowNum, "", 51);
-
+                data[9], data[10], data[11], data[12], data[13], data[14], data[15], data[16], 
+                data[19], data[20], data[21], data[22], data[23], data[24]], rowNum, "", 51);
+                 
+           
             rowNum++;
-            //agrega la fila de grupo
+            //agregar el footer de total por empleado.
 
-            ws += buildRow([data[2], "", "", "", "", "", "", "", "", "", "", "", "",
-            horasLab.toFixed(2), totalHe.toFixed(2), "", "", "", "", "", montoHe.toFixed(2), thoras100.toFixed(2),
-            monto100.toFixed(2)], "", 51);
+            ws += buildRow([data[2], "", "", "", "", "", "", "", "", ntardaGroup + " tardanzas. ", "", "", "",
+                horasLab + " ponches.", totalHe.toFixed(2) + " horas.", parseFloat(horasex * 60).toFixed(2) +
+                " minutos.", horasex + " horas.", "", "", "", 
+                "$" + monto100.toFixed(2), horasExtrasAl100, montoExtra100], rowNum, "", 51);
+            
+          
+          
 
         });
-        //Ultimo Grupo tenia problema que no salia.
-        //rowNum++;
-        //ws += buildRow([currentGroup,'','',total,'',totalSalary.toFixed(2)],"",51);
+       
+        
+        rowNum++;
+        ws += buildRow(["=>", "", "", "", "", "", "", "", "", ""], "", 51);
 
         rowNum++;
-        ws += buildRow(["..."], "", 51);
+        ws += buildRow(["...", "", "", "", "", "", "", "", "", "Total Tardanzas", "", "", "", "Total Ponches", "Total Horas Trabajadas", "Horas Extras (Minutos)", "Horas Extras (Horas)", "", "", "", "Monto Horas Extras","Horas Extra 100","Monto Extra 100"], "", 51);
 
         //Calculo de Total de la Hora
         rowNum++;
-        ws += buildRow(["Total General: ", "", "", "", "", "", "", "", "", "", "", "", "", tghorasLab.toFixed(2),
-            tgeneralHe.toFixed(2), "", "", "", "", "", tgmontoHe.toFixed(2), tghoras100.toFixed(2), tgmonto100.toFixed(2)], "", 51);
+        ws += buildRow(["TOTALES GENERALES : ", "", "", "", "", "", "", "", "", tg_tardanzas, "", "", "", tghorasLab,
+            tgeneralHe.toFixed(2), (tg_horasextras_min * 60).toFixed(2), tg_horasextras_min, "", "", "", tg_montoheporc.toFixed(2),
+            tg_montohex100.toFixed(2), tg_montoHorasExal100.toFixed(2)], "", 51);
         rowNum++;
 
     } else {

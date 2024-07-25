@@ -1,0 +1,149 @@
+﻿<!--DataTable Calculo de Horas Extras------------->
+<div class="container-fluid">
+    <div class="row">
+        <!--Barra de Herramientas de Opciones de Horas Extras-->
+        <div class="col-12 py-4">
+            <div class="alert alert-dark" role="alert" style="display:flex;align-items:center">
+                <img src="images/calculator.png" style="width:50px;height:50px;margin-right:20px" />
+                <h1>Horas Extras Empleados</h1>
+                <span class="badge bg-secondary" style="margin-left:20px"> Feriado </span> <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightgreen"></div>
+                <span class="badge bg-secondary" style="margin-left:20px"> Dia Libre </span>
+                <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightRed"></div>
+                <span class="badge bg-secondary" style="margin-left:20px"> Domingos </span>
+                <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="yellowforce"></div>
+                <span class="badge bg-secondary" style="margin-left:20px"> Dia Ausencia </span>
+                <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="RedAusencia"></div>
+                <form method="post">
+                    <button class="btn btn-primary" asp-page-handler="SendEmail">Enviar Email</button>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+    <!--Fin de la Barra de Herramientas-->
+    <!----------------------------------->
+    <!-- Datatable Cuadro de horas extras -->
+    <div class="row">
+        <div class="col-12">
+            <table id="TableHorasExtras" class="table table-striped nowrap" style="width:100%;margin-top:10px">
+                <!--Encabezado de la tabla-->
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Id.</th>
+                        <th>Empleado</th>
+                        <th>Dia</th>
+                        <th>Fecha</th>
+                        <th>Horario</th>
+                        <th>Ent</th>
+                        <th>Sal</th>
+                        <th>M1</th>
+                        <th>Te</th>
+                        <th>M2</th>
+                        <th>M3</th>
+                        <th>M4</th>
+                        <th>Pon</th>
+                        <th>T.Horas</th>
+                        <th>He</th>
+                        <th>HeT</th>
+                        <th>Feriado</th>
+                        <th>Libre</th>
+                        <th>Sueldo H.</th>
+                        <th>Factor</th>
+                        <th>Fr. Sueldo</th>
+                        <th>Monto</th>
+                        <th>H100%</th>
+                        <th>M100%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int row = 0;
+                    }
+                    @foreach (var item in Model.Jornadas)
+                    {
+                        row += 1;
+                        <tr>
+                            <td>
+                                @(item.diaAusencia ? "A" : row)
+                            </td>
+                            <td>
+                                @item.IdUser
+                            </td>
+                            <td>
+                                @item.Empleado
+                            </td>
+                            <td>
+                                @item.DiaSemana
+                            </td>
+                            <td>
+                                @item.Fecha.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                @item.ShiftName
+                            </td>
+                            <td>
+                                @item.ShiftStart
+                            </td>
+                            <td>
+                                @item.ShiftEnd
+                            </td>
+                            <td>
+                                @item.Mark1
+                            </td>
+                            <td>
+                                @item.Tardanza_Entrada
+                            </td>
+                            <td>
+                                @item.Mark2
+                            </td>
+                            <td>
+                                @item.Mark3
+                            </td>
+                            <td>
+                                @item.Mark4
+                            </td>
+                            <td>
+                                @item.Ponches
+                            </td>
+                            <td>
+                                @Math.Round(item.Horas_Jornada, 2, MidpointRounding.AwayFromZero)
+                            </td>
+                            <td>
+                                @item.he_string
+                            </td>
+                            <td>
+                                @item.Horas_Extras
+                            </td>
+                            <td>
+                                @item.Feriado
+                            </td>
+                            <td>
+                                @item.DayFree
+                            </td>
+                            <td>
+                                @item.sueldo_hora
+                            </td>
+                            <td>
+                                @item.factor
+                            </td>
+                            <td>
+                                @item.fr_sueldo
+                            </td>
+                            <td>
+                                @item.MontoHeDiario
+                            </td>
+                            <td>@item.horas100</td>
+                            <td>@item.Montoal100</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--Fin del Datatables de Horas Extras-->
+    <!-------------------------------------->
+</div>
+<!--Fin de la Capa de Horas Extras y Opciones---->
+<!----------------------------------------------->

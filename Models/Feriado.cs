@@ -10,7 +10,7 @@
         public int Type { get; set; }
         public int Factor { get; set; }
         public int Depart { get; set; }
-        public string? Employee { get; set; } 
-        public string? comment { get; set; }
+        public int Employee { get; set; } 
+        public string? Comment { get; set; }
     }
 }

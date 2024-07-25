@@ -13,8 +13,20 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\SICOSS_NOMINA.jpg",
+      "PackagePath": "staticwebassets\\images\\SICOSS_NOMINA.jpg"
+    },
+    {
       "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\calculator.png",
       "PackagePath": "staticwebassets\\images\\calculator.png"
+    },
+    {
+      "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\calendar2-day.svg",
+      "PackagePath": "staticwebassets\\images\\calendar2-day.svg"
+    },
+    {
+      "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\calendario-de-incidencias.png",
+      "PackagePath": "staticwebassets\\images\\calendario-de-incidencias.png"
     },
     {
       "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\date.png",
@@ -31,6 +43,10 @@
     {
       "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\holidays.png",
       "PackagePath": "staticwebassets\\images\\holidays.png"
+    },
+    {
+      "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\nomina.jpeg",
+      "PackagePath": "staticwebassets\\images\\nomina.jpeg"
     },
     {
       "Id": "C:\\Users\\siste\\source\\repos\\DataFlowRRHH\\wwwroot\\images\\process.png",

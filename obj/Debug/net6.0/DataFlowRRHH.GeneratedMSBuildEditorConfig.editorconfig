@@ -34,6 +34,34 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_CuadroDiaFeriado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0N1YWRyb0RpYUZlcmlhZG8uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_DatatableNETHorasExtrasEmpleados.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0RhdGF0YWJsZU5FVEhvcmFzRXh0cmFzRW1wbGVhZG9zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_HeaderAplicacion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hlYWRlckFwbGljYWNpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ModalCreateFeriado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX01vZGFsQ3JlYXRlRmVyaWFkby5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ModalDetallePagoEmpleados.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX01vZGFsRGV0YWxsZVBhZ29FbXBsZWFkb3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ParametrosFecha.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1BhcmFtZXRyb3NGZWNoYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ReportesImpresion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1JlcG9ydGVzSW1wcmVzaW9uLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

@@ -1,517 +1,48 @@
 ﻿@page "{searchString?}"
-
 @model IndexModel
 @{
     ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
-    int item_number = 0;
 }
 
 <div id="processingIndicator">Procesando los datos...</div>
 <!--Capa de los calendarios y feriados------------>
 <div class="container-fluid">
     <div class="row">
-        <div class="container alert alert-dark my-4" role="alert" style="display:flex;">
-            <img src="images/gestion.jpeg" />
-            <div class="container" style="display:flex;flex-direction:column">
-                <p style="font-size:80px;font-family:'Black Ops One'" class="text-black">DataFlow</p>
-                <strong style="font-size:48px">Gestion Humana.</strong>
-                <strong>Desarrollado por Etiquetas.com</strong>
-                <strong>Departamento de Desarrollo: 829-695-1050</strong>
-            </div>
-        </div>
-         <!--Cuadro de Parametros de Fecha-->
-        <div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
-               <div class="alert alert-success py-2 my-4" role="alert">
-                    <img src="images/date.png" style="margin-right:20px"/>
-                    <strong> Parametros de Fecha:</strong></div>
-            <form method="get" class="container" style="display:flex;flex-direction:column;justify-content:space-around">
-             
-                <strong>Fecha desde:</strong> <input class="form-control" asp-for="ToDate" />
-                <strong>Fecha hasta:</strong> <input class="form-control" asp-for="FromDate" />
-             
-                <button style="margin-top:26px" class="btn btn-primary" type="submit"><i class="bi bi-calendar3"></i> Cargar Datos</button>
-                
-            </form>
-        </div>
-         <!--Cuadro de feriados-->
-         <div class="col-3 border" style="margin-left:10px">
-            <div class="alert alert-success py-2 my-4" role="alert">
-                <img src="images/holidays.png" style="margin-right:20px"/>
-                <strong>Feriados y Excepciones:</strong></div>
-            <div class="container" style="display:flex;flex-direction:column;justify-content:space-around">
-                <p class="text-secondary">
-                    Haga click en el boton
-                    para ver el listado de 
-                    los dias Feriados y 
-                    las Excepciones creadas 
-                    en el programa bioadmin.
-                </p>
-                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-top:40px">
-                    <i class="bi bi-bell"></i> Ver Feriados
-                </button>
-            </div>            
-            <!-- Modal de los dias feriados-->
-            <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Dias Feriados y Excepciones.</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                     <table id="TableFeriado" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Id.
-                                </th>
-                                <th>
-                                    Fecha Inicio.
-                                </th>
-                                <th>
-                                    Fecha Final.
-                                </th>
-                                <th>
-                                    Descripcion
-                                </th>
-                                <th>
-                                    Recu.
-                                </th>
-                                <th>
-                                    Tipo
-                                </th>
-                                <th>
-                                    Factor
-                                </th>
-                                <th>
-                                    Dpto
-                                </th>
-                                <th>
-                                    Empleado
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var item in Model.Feriados)
-                            {
-                                 <tr>
-                                    <td>
-                                        @item.Id
-                                    </td>           
-                                    <td>
-                                        @item.DateStart
-                                    </td>           
-                                    <td>
-                                        @item.DateEnd
-                                    </td> 
-                                    <td>
-                                        @item.Description
-                                    </td>
-                                    <td>
-                                        @item.Recurrente
-                                    </td>
-                                    <td>
-                                        @item.Type
-                                    </td>
-                                    <td>
-                                        @item.Factor
-                                    </td>
-                                     <td>
-                                        @item.Depart
-                                    </td>
-                                    <td>
-                                        @item.Employee
-                                    </td>
-                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>                 
-                </div>
-              </div>
-            </div>
-
-        </div>
-        <!--Cuadro de Impresion-->
-         <div class="col-3 border" style="margin-left:10px">
-            <div class="alert alert-success py-2 my-4" role="alert">
-                <img src="images/process.png" style="margin-right:20px"/>
-                <strong>Imprimir y Exportar:</strong></div>
-            <strong>Seleccione el tipo de Documento:</strong>
-            <!--Fourmulario de reportes-->
-            <form method="post" class="container my-4" style="display:flex; flex-direction:column;justify-content:space-around">
-                <div class="form-check">
-                     <input class="form-check-input" name="FormatoDoc" value="pdf" type="radio" id="FormatoDoc" checked asp-for="FormatoDoc">
-                     <label class="form-check-label" for="FormatoDoc">
-                        Ver en <strong>Pdf.</strong>
-                     </label>
-                </div>
-                <div class="form-check">
-                        <input class="form-check-input" name="FormatoDoc" type="radio" value="excel" id="FormatoDoc"asp-for="FormatoDoc">
-                        <label class="form-check-label" for="FormatoDoc">
-                            Exportar a <strong>Excel.</strong>
-                        </label>
-                </div>
-                <div class="form-check">
-                        <input class="form-check-input" name="FormatoDoc" type="radio" value="word"  id="FormatoDoc" asp-for="FormatoDoc">
-                        <label class="form-check-label" for="FormatoDoc">
-                            Exportar a <strong>Word.</strong>
-                        </label>
-                </div>
-                <button type="submit" class="btn btn-primary" asp-page-handler="RunReports"  style="margin-top:25px"><i class="bi bi-printer"></i> Imprimir</button>
-            </form>
-             
-             
-        </div>
+        <partial name="_HeaderAplicacion" />
+        <!--Parametros de Fecha-->
+        <partial name="_ParametrosFecha" />
+        <!--Manejo de feriado-->
+        <partial name="_CuadroDiaFeriado" />
+        <partial name="_ModalCreateFeriado" />
+        <!--Reportes del Sistema-->
+        <partial name="_ReportesImpresion" />
     </div> 
 </div>
 <!--fin de la capa de los calendarios y feriados-->
-<!------------------------------------------------>
+<!--Datatable de las horas extras de empleados-->
+<partial name="_DatatableNETHorasExtrasEmpleados" />
+<!--Modal de detalle de pago a empleado-->
+<partial name="_ModalDetallePagoEmpleados" />
 
-<!--DataTable Calculo de Horas Extras------------->
-<div class="container-fluid">
-    <div class="row">
-        <!--Barra de Herramientas de Opciones de Horas Extras-->
-        <div class="col-12 py-4">
-            <div class="alert alert-dark" role="alert" style="display:flex;align-items:center">
-                  <img src="images/calculator.png" style="width:50px;height:50px;margin-right:20px"/>
-                 <h1>Horas Extras Empleados</h1>
-                     <span class="badge bg-secondary" style="margin-left:20px"> Feriado </span> <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightgreen"></div>
-                     <span class="badge bg-secondary" style="margin-left:20px"> Dia Libre </span>
-                     <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="lightRed"></div> 
-                  <span class="badge bg-secondary" style="margin-left:20px"> Domingos </span>
-                  <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="yellowforce"></div> 
-                   <span class="badge bg-secondary" style="margin-left:20px"> Dia Ausencia </span>
-                  <div style="width: 20px;height:20px;display:inline-block;margin-left:10px" class="RedAusencia"></div>
-
-
-                  <form method="post">
-                      <button class="btn btn-primary" asp-page-handler="SendEmail">Enviar Email</button>
-                  </form>
-
-                  
-            </div>
-         </div>
-    </div>
-    <!--Fin de la Barra de Herramientas-->
-    <!----------------------------------->
-
-    <!-- Datatable Cuadro de horas extras -->
-    <div class="row">
-        <div class="col-12">
-            <table id="TableHorasExtras" class="table table-striped nowrap" style="width:100%;margin-top:10px">
-                <!--Encabezado de la tabla-->
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Id.</th>
-                        <th>Empleado</th>
-                        <th>Dia</th>
-                        <th>Fecha</th>
-                        <th>Horario</th>
-                        <th>Ent</th>
-                        <th>Sal</th>
-                        <th>M1</th>
-                        <th>Te</th>
-                        <th>M2</th>
-                        <th>M3</th>
-                        <th>M4</th>
-                        <th>Pon</th>
-                        <th>T.Horas</th>
-                        <th>He</th>
-                        <th>HeT</th>
-                        <th>Feriado</th>
-                        <th>Libre</th>
-                        <th>Sueldo H.</th>
-                        <th>Factor</th>
-                        <th>Fr. Sueldo</th>
-                        <th>Monto</th>
-                        <th>H100%</th>
-                        <th>M100%</th>
-                    </tr>
-                </thead> 
-                <tbody>
-                @{int row = 0;}
-                @foreach(var item in Model.Jornadas)
-                {
-                    row += 1;
-                    <tr>
-                        <td>
-                             @(item.diaAusencia ? "A" : row)
-                        </td>
-                        <td>
-                            @item.IdUser
-                        </td>
-                        <td>
-                            @item.Empleado
-                        </td>
-                        <td>
-                            @item.DiaSemana
-                        </td>
-                        <td>
-                            @item.Fecha.ToString("dd/MM/yyyy")    
-                        </td>
-                        <td>
-                            @item.ShiftName    
-                        </td>
-                        <td>
-                            @item.ShiftStart
-                        </td>
-                          <td>
-                            @item.ShiftEnd
-                        </td>
-                        <td>
-                            @item.Mark1 
-                        </td>
-                        <td>
-                            @item.Tardanza_Entrada
-                        </td>
-                        <td>
-                            @item.Mark2 
-                        </td>
-                        <td>
-                            @item.Mark3 
-                        </td>
-                        <td>
-                            @item.Mark4 
-                        </td>
-                        <td>
-                            @item.Ponches
-                        </td>
-                        <td>
-                            @Math.Round(item.Horas_Jornada,2,MidpointRounding.AwayFromZero)
-                        </td>
-                        <td>
-                            @item.he_string
-                        </td>
-                        <td>
-                            @item.Horas_Extras
-                        </td>
-                        <td>
-                           @item.Feriado
-                        </td>
-                        <td>
-                            @item.DayFree
-                        </td>
-                        <td>
-                            @item.sueldo_hora
-                        </td>
-                        <td>
-                            @item.factor
-                        </td>
-                        <td>
-                            @item.fr_sueldo
-                        </td>
-                        <td>
-                            @item.MontoHeDiario
-                        </td>
-                        <td>@item.horas100</td>
-                        <td>@item.Montoal100</td>
-                    </tr>
-                }  
-            </tbody>
-            </table>
-        </div>
-    </div>
-    <!--Fin del Datatables de Horas Extras-->        
-    <!-------------------------------------->
-</div>
-<!--Fin de la Capa de Horas Extras y Opciones---->
-<!----------------------------------------------->     
-        
-<!-- Datatable de Listado de Ponches Empleados--->
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-12">
-			<div class="alert alert-dark my-4" role="alert" style="display:flex;align-items:center">
-				<img src="images/fingerprint.png" style="width:50px;height:50px;margin-right:20px"/>
-				<h1>Ponche de Empleados.</h1>
-			</div>
-		</div>
-        
-		
-		
-	</div>
-	<div class="row">
-		<div class="col-4">
-			<button class="btn btn-primary" id="botonPonches">Cargar</button>
-		</div>
-	</div>
-	
-    <div class="row">
-        <div class="col-12">
-            <table id="TablePonches" class="table table-bordered cell-border compact nowrap">
-            <!--Encabezado de la tabla-->
-            <thead>
-                <tr>
-                    <th>It.</th>
-                    <th>Id. Emp</th>
-                    <th>Nombre del Empleado</th>
-                    <th>Fecha y Hora Marca</th>
-                    <th>Id Dev.</th>
-                    <th>Nombre del Dispositivo</th>
-                    <th>Id Dpto.</th>
-                    <th>Departamento</th>
-                </tr>
-            </thead>  
-            <!--Detalle de tabla-->
-            @* <tbody>
-                @foreach(var item in Model.ListaPonches)
-                {
-                    item_number += 1;
-                    <tr>
-                        <td>
-                            @item_number
-                        </td>
-                        <td>
-                            @item.IdUser
-                        </td>
-                        <td>
-                            @item.NameUser
-                        </td>
-                        <td>
-                            @item.RecordTime
-                        </td>
-                        <td>
-                            @item.IdDevice
-                        </td>
-                        <td>
-                            @item.DeviceName
-                        </td>
-                        <td>
-                            @item.IdDepartment
-                        </td>
-                        <td>
-                            @item.DepartmentName
-                        </td>
-                    </tr>
-                }  
-            </tbody> *@
-        </table>
-        </div>
-    </div>
-</div>
-<!--Fin datatable de ponches de empleados-------->
-<!----------------------------------------------->
-
- <!-- Modal de los detalle pago empleado-->
-<div class="modal" id="modalEmploDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detalle pago de horas extras por Empleado.</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-               
-            </div>
-             <h5 class="idemplo" style="padding-left:10px;margin-top:30px"></h5>
-             <h5 class="nameEmplo" style="padding-left:10px"></h5>
-            <div class="modal-body">
-                <table id="dtEmploDetails" class="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>
-                                It.
-                            </th>
-                            <th>
-                                Fecha
-                            </th>
-                            <th>
-                                Horas Extras
-                            </th>
-                            <th>
-                                Monto Pesos
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                   
-                </table>
-                <h5 class="valHorasExtras" style="padding-left:10px;margin-top:30px"></h5>
-                <h5 class="valMontoTotal" style="padding-left:10px"></h5>
-            </div>   
-            <div class="modal-footer">
-                
-            </div>
-        </div>
-    </div>
-</div>
-
- 
- 
+<!--CODIGO JAVASCRIPT-->
  <script type="text/javascript" src="js/ModulosJS.js" ></script>
-
  @section Scripts
 {
     <script>
-        $(document).ready(function () {
-           
-            //Cargar los datos de los ponches al hacer click.
-
-            var botonLoad = document.querySelector("#botonPonches");
-             botonLoad.addEventListener("click", function () { 
-                 alert("cargar los datos de los ponches.");
-                 let tablaPonches = new DataTable('#TablePonches', {
-                     'proccesing': true,
-                     'serverSide': true,
-
-                     ajax: {
-                        url: '?handler=LoadPonches',
-                        type: 'POST',
-                        contentType: 'application/json',
-                        dataType: 'json'
-
-                     }
-
-                 });
-            });
-
-
-
-
-
-             
-  
+        $(document).ready(function () {           
             //tabla de calculo de Horas Extras.
             let tableHoraExtras = new DataTable('#TableHorasExtras', {
                 "processing": false,
                 order: [[1, "asc"]],
-
-
                 rowGroup: {
                     startRender : null,
                     endRender: function (rows, group) {
 
-                        let totalTardanzasEntrada = 0;
-
-                        let totalHorasEx = rows
-                            .data()
-                            .pluck(15)
-                            .reduce((a, b) => a + parseFloat(b), 0); 
-                        
-                            
-                        let totalMontoex = rows
-                            .data()
-                            .pluck(20)
-                            .reduce((a, b) => a + parseFloat(b), 0);
-
-                        let totalHoras100 = rows
-                            .data()
-                            .pluck(21)
-                            .reduce((a, b) => a + parseFloat(b), 0);               
-
-                        let totalMonto100 = rows
-                            .data()
-                            .pluck(22)
-                            .reduce((a, b) => a + parseFloat(b), 0);
-
                         let tr = document.createElement("tr");
 
-                        var dayfree = rows
-                        .data()
-                        .pluck(5)[0];
+                         var dayfree = rows
+                         .data()
+                         .pluck(5)[0];
                         
                         let descanso="";
                         cadena = 'Libre';
@@ -525,15 +56,15 @@
                         } 
 
                         addCell(tr,group + ' - ' + descanso, 9);
-                        addCell(tr, totalTardanzasEntrada.toFixed(2));
-                        addCell(tr, totalHorasEx.toFixed(2));
+                        // addCell(tr, totalTardanzasEntrada.toFixed(2));
+                        // addCell(tr, totalHorasEx.toFixed(2));
                         addCell(tr, "");
                         addCell(tr, "");
                         addCell(tr, "");
                         addCell(tr, "");
-                        addCell(tr, totalMontoex.toFixed(2));
-                        addCell(tr, totalHoras100.toFixed(2));
-                        addCell(tr, totalMonto100.toFixed(2));
+                        // addCell(tr, totalMontoex.toFixed(2));
+                        // addCell(tr, totalHoras100.toFixed(2));
+                        // addCell(tr, totalMonto100.toFixed(2));
                         return tr;
                     },
                     dataSrc: 2
@@ -615,7 +146,7 @@
                         }
                     },
                     {
-                        "targets": 17,
+                        "targets": 18,
                         visible: false,
                         search: false,
                         render: function (data, type, full, meta) {
@@ -630,8 +161,6 @@
                     }
                 ]
             });
-
-
             //loading indicator.
             $('#TableHorasExtras')
 	            .on('processing.dt',
@@ -639,16 +168,6 @@
 			            $('#processingIndicator').css('display', processing ? 'block' : 'none');
 
 		            });
-                // .on('preDraw', function () {
-                //     alert('predraw')
-                // })
-                // .on('draw.dt', function () {
-                //     alert('draw.dt')
-                // })
-                // .on('init.dt', function () {
-                //     $('TableHorasExtras').show();
-                // });
-
             //Fin de Configuracion de Tabla de Horas Extras.
             //--------------------------------------------//
 

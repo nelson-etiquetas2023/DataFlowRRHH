@@ -1,0 +1,14 @@
+﻿@model IndexModel
+<!--Cuadro de Parametros de Fecha-->
+<div class="col-3 border" style="margin-bottom:5px;padding-bottom:10px">
+    <div class="alert alert-success py-2 my-4" role="alert">
+        <img src="images/date.png" style="margin-right:20px" />
+        <strong> Parametros de Fecha:</strong>
+    </div>
+    <form method="get" class="container" style="display:flex;flex-direction:column;justify-content:space-around">
+        <strong>Fecha desde:</strong> <input class="form-control" asp-for="ToDate" />
+        <strong>Fecha hasta:</strong> <input class="form-control" asp-for="FromDate" />
+        <button style="margin-top:26px" class="btn btn-primary" type="submit"><i class="bi bi-calendar3">
+        </i> Cargar Datos</button>
+    </form>
+</div>

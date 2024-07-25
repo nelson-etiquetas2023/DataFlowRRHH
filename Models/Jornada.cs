@@ -13,7 +13,7 @@ namespace DataFlowRRHH.Models
         public string Mark2 { get; set; } = null!;
         public string Mark3 { get; set; } = null!;
         public string Mark4 { get; set; } = null!;
-        public int Tardanza_Entrada { get; set; } = 0;
+        public double Tardanza_Entrada { get; set; } = 0;
         public DateTime? Mark1_Dt { get; set; }
         public DateTime? Mark2_Dt { get; set; }
         public DateTime? Mark3_Dt { get; set; }

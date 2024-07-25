@@ -1,0 +1,98 @@
+﻿ <!--Cuadro de feriados-->
+<div class="col-3 border" style="margin-left:10px">
+    <div class="alert alert-success py-2 my-4" role="alert">
+        <img src="images/holidays.png" style="margin-right:20px" />
+        <strong>Feriados y Excepciones:</strong>
+    </div>
+    <div class="container" style="display:flex;flex-direction:column;justify-content:space-around">
+        <p class="text-secondary">
+            Haga click en el boton
+            para ver el listado de
+            los dias Feriados y
+            las Excepciones creadas
+            en el programa bioadmin.
+        </p>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-top:40px">
+            <i class="bi bi-bell"></i> Ver Feriados
+        </button>
+    </div>
+
+    <!-- Modal de los dias feriados-->
+    <div class="modal fade bd-example-modal-xl" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title me-4" id="exampleModalLabel">Dias Feriados y Excepciones.</h5>
+
+                    <!-- Button Ejecutar crear feriado-->
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFeriados">
+                        <i class="bi bi-calendar4-event me-2"></i>Crear Feriado
+                    </button>
+                    <!--------------------------------->
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <th>Dia</th>
+                    <table id="TableFeriado" class="table table-striped nowrap">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Id.
+                                </th>
+                                <th>
+                                    Fecha Inicio.
+                                </th>
+                                <th>
+                                    Fecha Final.
+                                </th>
+                                <th>
+                                    Descripcion
+                                </th>
+                                <th>
+                                    Factor
+                                </th>
+                                <th>
+                                    Recurrente.
+                                </th>
+                                <th>
+                                    Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Feriados)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Id
+                                    </td>
+                                    <td>
+                                        @item.DateStart
+                                    </td>
+                                    <td>
+                                        @item.DateEnd
+                                    </td>
+                                    <td>
+                                        @item.Description
+                                    </td>
+                                    <td>
+                                        @item.Factor
+                                    </td>
+                                    <td>
+                                        @item.Recurrente
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-info">Editar</button>
+                                        <button class="btn btn-danger">Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
