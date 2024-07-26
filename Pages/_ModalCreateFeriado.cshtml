@@ -1,8 +1,12 @@
-﻿<div class="modal fade bd-example-modal-xl" id="createFeriados" tabindex="-1" aria-labelledby="Feriados y excepciones" aria-hidden="true">
+﻿@model DataFlowRRHH.Models.Feriado
+
+<div class="modal fade bd-example-modal-xl" id="createFeriados" tabindex="-1" aria-labelledby="Feriados y excepciones" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title me-4" id="feriados"><i class="bi-alarm me-2" style="font-size: 2rem; color: cornflowerblue;"></i>Crear Feriados</h2>
+                <h2 class="modal-title me-4" id="feriados">
+                    <i class="bi-alarm me-2" 
+                    style="font-size: 2rem; color: cornflowerblue;"></i>Crear Feriados</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -11,52 +15,73 @@
                 </p>
                 <div class="row">
                     <div class="col-6">
-                        <form class="mt-3">
+                        <form method="post" class="mt-3">
                             <div class="form-group mb-2">
                                 <strong><label for="name-feriado">Nombre dia feriado: </label></strong>
-                                <input type="text" class="form-control" id="name-feriado" aria-describedby="nameferiado" placeholder="Nombre dia feriado">
+                                <input type="text" class="form-control" id="name-feriado"
+                                aria-describedby="nameferiado"
+                                placeholder="Nombre dia feriado"
+                                asp-for="Description"
+                                />
                             </div>
                             <div class="form-group mb-2">
                                 <strong><label for="start-date">Fecha Inicio: </label></strong>
-                                <input type="date" class="form-control" id="start-date" />
+                                <input type="date" class="form-control" 
+                                id="start-date"
+                                asp-for="BeginingDate"
+                                />
                             </div>
                             <div class="form-group mb-2">
                                 <strong><label for="end-date">Fecha Final: </label></strong>
-                                <input type="date" class="form-control" id="end-date" />
+                                <input type="date" 
+                                class="form-control" 
+                                id="end-date"
+                                asp-for="EndingDate" 
+                                />
                             </div>
                             <div class="form-group mb-5">
                                 <strong><label for="factor-pago">Factor de Pago [%]: </label></strong>
-                                <input type="text" class="form-control" id="factor-pago" />
+                                <input type="text" 
+                                class="form-control" 
+                                id="factor-pago"
+                                asp-for="PaymentFactor"
+                                />
                             </div>
-
                             <div class="input-group mb-5">
-                                
-
                                 <div class="form-floating" style="width:600px;">
-                                    <textarea class="form-control" placeholder="Coemntario general acerca del dia feriado:" id="floatingTextarea2" style="height: 100px"></textarea>
+                                    <textarea class="form-control" 
+                                    placeholder="Coementario general acerca del dia feriado:" 
+                                    id="floatingTextarea2" 
+                                    style="height: 100px"
+                                    asp-for="Comment"
+                                    ></textarea>
                                     <label for="floatingTextarea2">Comentario General:</label>
                                 </div>
-
                             </div>
-
-                           
-                                
                             <div class="form-check mb-5">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <input type="checkbox" 
+                                class="form-check-input" 
+                                id="exampleCheck1"
+                                asp-for="Recurring"
+                                >
                                 <label class="form-check-label" for="exampleCheck1"><strong>Recurrente</strong> </label>
                             </div>
-                            <button type="submit" class="btn btn-primary mb-5">
+
+                            <button type="submit" 
+                            class="btn btn-primary mb-5"
+                                    asp-page-handler="CreateFeriado" data-bs-toggle="modal">
                                 <i class="bi bi-calendar2-event me-2"></i>Guardar
                             </button>
+
                         </form>
                     </div>
-                    <div class="col-6 d-flex justify-content-center align-items-md-center" >
-                        <img src="~/images/calendario-de-incidencias.png" width="350" height="350"/>
+                    <div class="col-6 d-flex justify-content-center align-items-md-center">
+                        <img src="~/images/calendario-de-incidencias.png" width="350" height="350" />
                     </div>
-                </div>       
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-       
+

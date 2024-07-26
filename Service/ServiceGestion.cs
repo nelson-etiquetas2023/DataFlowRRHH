@@ -591,7 +591,7 @@ namespace DataFlowRRHH.Service
 
             foreach (var item in feriados) 
             {
-                if (fecha >= item.DateStart && fecha <= item.DateEnd)
+                if (fecha >= item.BeginingDate && fecha <= item.EndingDate)
                 {
                     result = true;
                 }
@@ -885,16 +885,13 @@ namespace DataFlowRRHH.Service
             
             lista = dt.AsEnumerable().Select(x => new Feriado
             {
-                Id = x.Field<int>("IdException"),
+                IdException = x.Field<int>("IdException"),
                 Description = x.Field<string>("Description")!,
-                DateStart = x.Field<DateTime>("BeginingDate"),
-                DateEnd = x.Field<DateTime>("EndingDate"),
-                Type = x.Field<int>("PaymentType"),
-                Factor = x.Field<int>("PaymentFactor"),
-                Depart = x.Field<int>("IdDepartment"),
-                Employee =  x.Field<int>("IdUser"),
+                BeginingDate = x.Field<DateTime>("BeginingDate"),
+                EndingDate = x.Field<DateTime>("EndingDate"),
+                PaymentFactor = x.Field<int>("PaymentFactor"),
                 Comment = x.Field<string>("Comment"),
-                Recurrente = x.Field<Boolean>("Recurring")
+                Recurring = x.Field<Boolean>("Recurring")
             }).ToList();
 
             return lista;

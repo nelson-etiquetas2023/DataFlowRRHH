@@ -23,11 +23,23 @@ public partial class BdbioAdminSqlContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserShift> UserShifts { get; set; }
+    public virtual DbSet<Feriado> Feriado { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Latin1_General_CI_AS");
+
+        modelBuilder.Entity<Feriado>(entity =>
+        {
+            entity.HasKey(e => e.IdException)
+            .HasName("aaaaaExceptionStr_PK");
+            entity.ToTable("Exception");
+        });
+        
+
+            
+        
 
         modelBuilder.Entity<Department>(entity =>
         {

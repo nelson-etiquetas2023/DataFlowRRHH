@@ -2,11 +2,13 @@
 using DataFlowRRHH.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+
 
 namespace DataFlowRRHH.Pages
 {
@@ -58,20 +60,25 @@ namespace DataFlowRRHH.Pages
         [BindProperty]
         public List<Jornada> Jornadas { get; set; } = new List<Jornada>();
 
+        public Feriado feriado { get; set; }
        
-        public IndexModel(IServiceGestion _ServiceGestion, IConfiguration _configuracion)
+        public BdbioAdminSqlContext _context { get; set; }
+
+        public IndexModel(IServiceGestion _ServiceGestion, IConfiguration _configuracion, BdbioAdminSqlContext context)
         {
             ToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 6, 0, 0);
             FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
-
-			//ToDate = new DateTime(2023, 12, 1, 6, 0, 0);
-			//FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
-
 			ServiceGestion = _ServiceGestion;
             configuracion = _configuracion;
-
-           
+            _context = context;
         }
+        public async Task OnPostCreateFeriado(Feriado feriado) 
+        {
+            _context.Feriado.Add(feriado);
+            await _context.SaveChangesAsync();
+            Feriados = ServiceGestion.GetDataFeriados();
+            //return Partial("_CuadroDiaFeriado");
+        }    
 
         public async Task OnGetAsync()
         {

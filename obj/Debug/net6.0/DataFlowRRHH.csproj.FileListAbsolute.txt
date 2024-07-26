@@ -87,3 +87,12 @@ C:\Users\siste\source\repos\DataFlowRRHH\obj\Debug\net6.0\DataFlowRRHH.genruntim
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Debug\net6.0\ref\DataFlowRRHH.dll
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Debug\net6.0\DataFlowRRHH.sourcelink.json
 C:\Users\siste\source\repos\DataFlowRRHH\obj\Debug\net6.0\DataFlow.F3E4A00D.Up2Date
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\libman.json
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\CurrieTechnologies.Razor.SweetAlert2.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.AspNetCore.Authorization.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.AspNetCore.Components.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.AspNetCore.Components.Forms.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.AspNetCore.Components.Web.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.AspNetCore.Metadata.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\Microsoft.JSInterop.dll
+C:\Users\siste\source\repos\DataFlowRRHH\bin\Debug\net6.0\System.IO.Pipelines.dll

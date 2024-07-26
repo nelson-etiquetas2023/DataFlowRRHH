@@ -1,3 +1,4 @@
+using CurrieTechnologies.Razor.SweetAlert2;
 using DataFlowRRHH.Models;
 using DataFlowRRHH.Service;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<BdbioAdminSqlContext>(options => options.UseSqlServer(
 builder.Configuration.GetConnectionString("SettingEtiquetas")));
 builder.Services.AddScoped<IServiceGestion, ServiceGestion>();
+builder.Services.AddSweetAlert2();
 
 var app = builder.Build();
 
