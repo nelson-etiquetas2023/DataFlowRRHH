@@ -1,6 +1,8 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using DataFlowRRHH.Models;
 using DataFlowRRHH.Service;
+using DataFlowRRHH.Service.Contracts;
+using DataFlowRRHH.Service.Implementations;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -13,6 +15,7 @@ builder.Services.AddDbContext<BdbioAdminSqlContext>(options => options.UseSqlSer
 builder.Configuration.GetConnectionString("SettingEtiquetas")));
 builder.Services.AddScoped<IServiceGestion, ServiceGestion>();
 builder.Services.AddSweetAlert2();
+builder.Services.AddScoped<IServiceFeriado, ServiceFeriado>();
 
 var app = builder.Build();
 

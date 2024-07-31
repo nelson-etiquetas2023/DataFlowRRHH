@@ -50,8 +50,7 @@ namespace DataFlowRRHH.Pages
         [BindProperty]
         public string FormatoDoc { get; set; } = "pdf";
 
-        public List<Feriado> Feriados { get; set; } = new List<Feriado>();
-
+        
         readonly IConfiguration configuracion;
 
         [BindProperty]
@@ -60,9 +59,9 @@ namespace DataFlowRRHH.Pages
         [BindProperty]
         public List<Jornada> Jornadas { get; set; } = new List<Jornada>();
 
-        public Feriado feriado { get; set; }
-       
         public BdbioAdminSqlContext _context { get; set; }
+
+        public List<Feriado> Feriados = new();
 
         public IndexModel(IServiceGestion _ServiceGestion, IConfiguration _configuracion, BdbioAdminSqlContext context)
         {
@@ -72,13 +71,6 @@ namespace DataFlowRRHH.Pages
             configuracion = _configuracion;
             _context = context;
         }
-        public async Task OnPostCreateFeriado(Feriado feriado) 
-        {
-            _context.Feriado.Add(feriado);
-            await _context.SaveChangesAsync();
-            Feriados = ServiceGestion.GetDataFeriados();
-            //return Partial("_CuadroDiaFeriado");
-        }    
 
         public async Task OnGetAsync()
         {

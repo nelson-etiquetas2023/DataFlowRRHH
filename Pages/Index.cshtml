@@ -12,8 +12,24 @@
         <!--Parametros de Fecha-->
         <partial name="_ParametrosFecha" />
         <!--Manejo de feriado-->
-        <partial name="_CuadroDiaFeriado" />
-        <partial name="_ModalCreateFeriado", model="new DataFlowRRHH.Models.Feriado()"  />
+        <div class="col-3 border" style="margin-left:10px">
+            <div class="alert alert-success py-2 my-4" role="alert">
+                <img src="images/holidays.png" style="margin-right:20px" />
+                <strong>Feriados y Excepciones:</strong>
+            </div>
+            <div class="container" style="display:flex;flex-direction:column;justify-content:space-around">
+                <p class="text-secondary">
+                    Haga click en el boton
+                    para ver el listado de
+                    los dias Feriados y
+                    las Excepciones creadas
+                    en el programa bioadmin.
+                </p>
+                <!-- Button trigger modal -->
+                <a href="/feriados/index" class="btn btn-primary">Ver Feriados</a>
+            </div>
+        </div>
+      
         <!--Reportes del Sistema-->
         <partial name="_ReportesImpresion" />
     </div> 

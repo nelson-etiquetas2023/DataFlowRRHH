@@ -13,86 +13,8 @@
             en el programa bioadmin.
         </p>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-top:40px">
+        <button type="button" class="btn btn-primary" asp-page="/feriados/index" style="margin-top:40px">
             <i class="bi bi-bell"></i> Ver Feriados
         </button>
-    </div>
-
-    <!-- Modal de los dias feriados-->
-    <div class="modal fade bd-example-modal-xl" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title me-4" id="exampleModalLabel">Dias Feriados y Excepciones.</h5>
-
-                    <!-- Button Ejecutar crear feriado-->
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFeriados">
-                        <i class="bi bi-calendar4-event me-2"></i>Crear Feriado
-                    </button>
-                    <!--------------------------------->
-
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <th>Dia</th>
-                    <table id="TableFeriado" class="table table-striped nowrap">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Id.
-                                </th>
-                                <th>
-                                    Fecha Inicio.
-                                </th>
-                                <th>
-                                    Fecha Final.
-                                </th>
-                                <th>
-                                    Descripcion
-                                </th>
-                                <th>
-                                    Factor
-                                </th>
-                                <th>
-                                    Recurrente.
-                                </th>
-                                <th>
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Feriados)
-                            {
-                                <tr>
-                                    <td>
-                                        @item.IdException
-                                    </td>
-                                    <td>
-                                        @item.BeginingDate
-                                    </td>
-                                    <td>
-                                        @item.EndingDate
-                                    </td>
-                                    <td>
-                                        @item.Description
-                                    </td>
-                                    <td>
-                                        @item.PaymentFactor
-                                    </td>
-                                    <td>
-                                        @item.Recurring
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-info">Editar</button>
-                                        <button class="btn btn-danger">Borrar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
