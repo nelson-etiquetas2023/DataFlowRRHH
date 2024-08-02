@@ -15,7 +15,7 @@ namespace DataFlowRRHH.Pages.Feriados
         {
             ServiceFeriado = serviceFerido;
         }
-        
+
         public void OnGet()
         {
             Feriados = ServiceFeriado.GetFeriadosAll();

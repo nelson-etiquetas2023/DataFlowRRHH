@@ -1,25 +1,27 @@
 ﻿@page
 @model DataFlowRRHH.Pages.Feriados.CreateModel
 
-
 <p class="lead">
     DATOS DE LOS DIAS FERIADOS:
 </p>
 <div class="row">
     <div class="col-6">
         <form method="post" class="mt-3">
+            <div asp-validation-summary="All"></div>
             <div class="form-group mb-2">
                 <strong><label for="name-feriado">Nombre dia feriado: </label></strong>
                 <input type="text" class="form-control" id="name-feriado"
                        aria-describedby="nameferiado"
                        placeholder="Nombre dia feriado"
                        asp-for="@Model.Feriado.Description" />
+                <span asp-validation-for="@Model.Feriado.Description" class="text-danger"></span>
             </div>
             <div class="form-group mb-2">
                 <strong><label for="start-date">Fecha Inicio: </label></strong>
                 <input type="date" class="form-control"
                        id="start-date"
                        asp-for="@Model.Feriado.BeginingDate" />
+                <span asp-validation-for="@Model.Feriado.BeginingDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-2">
                 <strong><label for="end-date">Fecha Final: </label></strong>
@@ -27,6 +29,7 @@
                        class="form-control"
                        id="end-date"
                        asp-for="@Model.Feriado.EndingDate" />
+                <span asp-validation-for="@Model.Feriado.EndingDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-5">
                 <strong><label for="factor-pago">Factor de Pago [%]: </label></strong>
@@ -34,6 +37,7 @@
                        class="form-control"
                        id="factor-pago"
                        asp-for="@Model.Feriado.PaymentFactor" />
+                <span asp-validation-for="@Model.Feriado.PaymentFactor" class="text-danger"></span>
             </div>
             <div class="input-group mb-5">
                 <div class="form-floating" style="width:600px;">
@@ -69,3 +73,9 @@
     </div>
 </div>
 
+@section Scripts
+{
+    @{
+        <partial name="_ValidationScriptsPartial"/>
+    }
+}

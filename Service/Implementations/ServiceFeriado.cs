@@ -30,10 +30,14 @@ namespace DataFlowRRHH.Service.Implementations
             return(feriado);
         }
 
-        public void DeleteFeriado(int Id)
+        public void DeleteFeriado(Feriado Feriado)
         {
-            var itemDelete = Context.Feriado.Find(Id);
-            if (itemDelete != null) Context.Feriado.Remove(itemDelete);
+            if (Feriado == null)
+            {
+                throw new ArgumentNullException(nameof(Feriado));
+            }
+            Context.Feriado.Remove(Feriado);
+            Context.SaveChanges();
         }
 
         public Feriado? GetFeriadoById(int Id)

@@ -5,9 +5,9 @@ namespace DataFlowRRHH.Models
     public class Feriado
     {
         public int IdException { get; set; }
-        [Required(ErrorMessage = "la fecha es requeridos")]
+        [Required(ErrorMessage = "la fecha de inicio es requerida")]
         public DateTime BeginingDate { get; set; }
-        [Required(ErrorMessage = "la fecha es requeridos")]
+        [Required(ErrorMessage = "la fecha inicial es requerida")]
         public DateTime EndingDate { get; set; }
 
         [Required(ErrorMessage = "la descripcion del dia feriado es requerida...")]
@@ -15,7 +15,7 @@ namespace DataFlowRRHH.Models
         public string? Description { get; set; }
         public Boolean Recurring { get; set; }
         [Range(1, 100)]
-        [Required]
+        [Required(ErrorMessage = "el factor de calculo es requerido")]
         public int PaymentFactor { get; set; }
         public string? Comment { get; set; }
     }

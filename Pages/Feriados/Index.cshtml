@@ -1,9 +1,19 @@
 ﻿@page 
 @model DataFlowRRHH.Pages.Feriados.IndexModel
 
-<h5 class="modal-title me-4 mb-3" id="exampleModalLabel">Dias Feriados y Excepciones.</h5>
+<h5 class="modal-title me-4 mb-3" id="exampleModalLabel"><i class="bi bi-calendar-month me-2"></i>Dias Feriados y Excepciones.</h5>
 <!-- Button Ejecutar crear feriado-->
-<a class="btn btn-primary mb-3" href="/feriados/create">Crear Feriado</a>
+
+<div class="row my-4">
+    <div class="col-6" style="display: flex">
+        <a class="btn btn-primary me-2" href="/feriados/create"><i class="bi bi-alarm me-2"></i>Crear Feriado</a>
+        <a class="btn btn-primary" href="../Index"><i class="bi bi-house-check me-2"></i>Volver al Home</a>
+    </div>
+    
+</div>
+
+
+
 
 @if (Model.Feriados != null && Model.Feriados.Any())
 {
@@ -56,8 +66,8 @@
                         @feriado.Recurring
                     </td>
                     <td>
-                        <a href="/feriados/update/@feriado.IdException" class="btn btn-primary">Editar</a>
-                        <button class="btn btn-danger">Borrar</button>
+                        <a href="/feriados/update/@feriado.IdException" class="btn btn-info"><i class="bi bi-pencil me-2"></i>Editar</a>
+                        <a href="/feriados/delete/@feriado.IdException" class="btn btn-danger"><i class="bi bi-trash me-2"></i>Eliminar</a>
                     </td>
                 </tr>
             }
@@ -68,13 +78,7 @@ else
 {
     <p>No hay registros</p>
 }
-
-
-
 <!--------------------------------->
-
-
-
 
 @section Scripts
 {
@@ -89,8 +93,3 @@ else
 
     </script>
 }
-
-
-
-
-

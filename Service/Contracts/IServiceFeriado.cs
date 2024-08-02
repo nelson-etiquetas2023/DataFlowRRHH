@@ -9,7 +9,7 @@ namespace DataFlowRRHH.Service.Contracts
         Feriado? GetFeriadoById(int Id);
         Task<Feriado> AddFeriado(Feriado feriado);
         void UpdateFeriado(Feriado feriado);
-        void DeleteFeriado(int Id);
+        void DeleteFeriado(Feriado Feriado);
         void SaveChanges();
     }
 }
