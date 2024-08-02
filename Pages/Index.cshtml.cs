@@ -59,9 +59,7 @@ namespace DataFlowRRHH.Pages
         [BindProperty]
         public List<Jornada> Jornadas { get; set; } = new List<Jornada>();
 
-        public BdbioAdminSqlContext _context { get; set; }
-
-        public List<Feriado> Feriados = new();
+        public BdbioAdminSqlContext Context { get; set; }
 
         public IndexModel(IServiceGestion _ServiceGestion, IConfiguration _configuracion, BdbioAdminSqlContext context)
         {
@@ -69,17 +67,16 @@ namespace DataFlowRRHH.Pages
             FromDate = ToDate.AddMonths(1).AddDays(-1).AddHours(17).AddMinutes(59).AddMilliseconds(59);
 			ServiceGestion = _ServiceGestion;
             configuracion = _configuracion;
-            _context = context;
+            Context = context;
         }
 
         public async Task OnGetAsync()
         {
             //query de registro de huellas de empleados.
             ListaPonches = await ServiceGestion.LoadHuellasEmpleados(ToDate, FromDate);
-            //Tabla Feriados.
-            Feriados = ServiceGestion.GetDataFeriados();
+            
             //calculo de las horas extras.
-            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches, Feriados);
+            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches);
         }
         public async Task OnPostSendEmailAsync() 
         {
@@ -87,9 +84,9 @@ namespace DataFlowRRHH.Pages
             //query de registro de huellas de empleados.
             ListaPonches = await ServiceGestion.LoadHuellasEmpleados(ToDate, FromDate);
             //Tabla Feriados.
-            Feriados = ServiceGestion.GetDataFeriados();
+            //Feriados = ServiceGestion.GetDataFeriados();
             //calculo de las horas extras.
-            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches, Feriados);
+            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches);
 
             //consulta de detalle de tardanzas.
             var query = from data in Jornadas
@@ -282,7 +279,7 @@ namespace DataFlowRRHH.Pages
 
             //Consultas de horas extras.
             ListaPonches = await ServiceGestion.LoadHuellasEmpleados(ToDate, FromDate);
-            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches,Feriados);
+            Jornadas = ServiceGestion.CalcularHorasExtras(ListaPonches);
 
 
             foreach (var item in Jornadas)
@@ -340,7 +337,7 @@ namespace DataFlowRRHH.Pages
             }
 
             //Calculo de Condiciones por escalas Hoprarios.
-            ServiceGestion.CalculoEscalasDeHorarios(FileReportHorasExtras, Feriados);
+            ServiceGestion.CalculoEscalasDeHorarios(FileReportHorasExtras);
 
             //consumir la api de reportes.
 
