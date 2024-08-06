@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataFlowRRHH.Migrations
 {
     [DbContext(typeof(BdbioAdminSqlContext))]
-    [Migration("20240726145359_addFeriados")]
-    partial class addFeriados
+    [Migration("20240805145417_CreateUsuario")]
+    partial class CreateUsuario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -147,42 +147,36 @@ namespace DataFlowRRHH.Migrations
 
             modelBuilder.Entity("DataFlowRRHH.Models.Feriado", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("IdException")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdException"));
+
+                    b.Property<DateTime>("BeginingDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateEnd")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateStart")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Depart")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
-                    b.Property<int>("Employee")
+                    b.Property<DateTime>("EndingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentFactor")
                         .HasColumnType("int");
 
-                    b.Property<int>("Factor")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Recurrente")
+                    b.Property<bool>("Recurring")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.HasKey("IdException")
+                        .HasName("aaaaaExceptionStr_PK");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("Feriado");
+                    b.ToTable("Exception", (string)null);
                 });
 
             modelBuilder.Entity("DataFlowRRHH.Models.Record", b =>
@@ -853,6 +847,46 @@ namespace DataFlowRRHH.Migrations
                     b.HasIndex(new[] { "UserShiftId" }, "UserShiftId");
 
                     b.ToTable("UserShift", (string)null);
+                });
+
+            modelBuilder.Entity("DataFlowRRHH.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Departament")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TypeUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuario");
                 });
 
             modelBuilder.Entity("DataFlowRRHH.Models.Record", b =>

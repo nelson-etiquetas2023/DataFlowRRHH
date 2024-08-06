@@ -25,6 +25,7 @@ public partial class BdbioAdminSqlContext : DbContext
     public virtual DbSet<UserShift> UserShifts { get; set; }
     public virtual DbSet<Feriado> Feriado { get; set; }
 
+    public virtual DbSet<UsuarioModel> Usuario { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,11 +37,7 @@ public partial class BdbioAdminSqlContext : DbContext
             .HasName("aaaaaExceptionStr_PK");
             entity.ToTable("Exception");
         });
-        
-
-            
-        
-
+       
         modelBuilder.Entity<Department>(entity =>
         {
             entity.HasKey(e => e.IdDepartment)

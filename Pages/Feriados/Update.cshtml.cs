@@ -10,14 +10,14 @@ namespace DataFlowRRHH.Pages.Feriados
     {
         [BindProperty]
         public Feriado EditFeriado { get; set; } = null!;
-        public IServiceFeriado _serviceFeriado { get; set; }
+        public IServiceFeriado ServiceFeriado { get; set; }
         public UpdateModel(IServiceFeriado serviceFeriado)
         {
-            _serviceFeriado = serviceFeriado;   
+            ServiceFeriado = serviceFeriado;   
         }
         public void OnGet(int id)
         {
-            var feriado = _serviceFeriado.GetFeriadoById(id);
+            var feriado = ServiceFeriado.GetFeriadoById(id);
             if (feriado is not null) 
             {
                 EditFeriado = new Feriado()
@@ -31,11 +31,11 @@ namespace DataFlowRRHH.Pages.Feriados
                 };
             }
         }
-        public async Task<IActionResult> OnPost() 
+        public IActionResult OnPost() 
         {
             if (EditFeriado is not null) 
             {
-                var existingFeriado = _serviceFeriado.GetFeriadoById(EditFeriado.IdException);
+                var existingFeriado = ServiceFeriado.GetFeriadoById(EditFeriado.IdException);
                 if (existingFeriado is not null) 
                 {
                     existingFeriado.Description = EditFeriado.Description;
@@ -44,7 +44,7 @@ namespace DataFlowRRHH.Pages.Feriados
                     existingFeriado.Comment = EditFeriado.Comment;
                     existingFeriado.PaymentFactor = EditFeriado.PaymentFactor;
                     existingFeriado.Recurring = EditFeriado.Recurring;
-                    _serviceFeriado.SaveChanges();
+                    ServiceFeriado.SaveChanges();
                 }
             }
             return this.RedirectToPage("./Index");

@@ -1,5 +1,7 @@
 using CurrieTechnologies.Razor.SweetAlert2;
 using DataFlowRRHH.Models;
+using DataFlowRRHH.Repositories.Contracts;
+using DataFlowRRHH.Repositories.Implementations;
 using DataFlowRRHH.Service;
 using DataFlowRRHH.Service.Contracts;
 using DataFlowRRHH.Service.Implementations;
@@ -16,6 +18,8 @@ builder.Configuration.GetConnectionString("SettingEtiquetas")));
 builder.Services.AddScoped<IServiceGestion, ServiceGestion>();
 builder.Services.AddSweetAlert2();
 builder.Services.AddScoped<IServiceFeriado, ServiceFeriado>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 
 var app = builder.Build();
 

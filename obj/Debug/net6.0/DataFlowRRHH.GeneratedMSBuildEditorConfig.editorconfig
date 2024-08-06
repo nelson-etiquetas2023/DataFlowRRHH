@@ -18,6 +18,34 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\siste\source\repos\DataFlowRRHH
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_CuadroDiaFeriado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfQ3VhZHJvRGlhRmVyaWFkby5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_DatatableNETHorasExtrasEmpleados.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfRGF0YXRhYmxlTkVUSG9yYXNFeHRyYXNFbXBsZWFkb3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_HeaderAplicacion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfSGVhZGVyQXBsaWNhY2lvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_ModalCreateFeriado.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfTW9kYWxDcmVhdGVGZXJpYWRvLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_ModalDetallePagoEmpleados.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfTW9kYWxEZXRhbGxlUGFnb0VtcGxlYWRvcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_ParametrosFecha.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfUGFyYW1ldHJvc0ZlY2hhLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Components/_ReportesImpresion.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ29tcG9uZW50c1xfUmVwb3J0ZXNJbXByZXNpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/siste/source/repos/DataFlowRRHH/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -54,32 +82,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_CuadroDiaFeriado.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0N1YWRyb0RpYUZlcmlhZG8uY3NodG1s
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Usuario/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_DatatableNETHorasExtrasEmpleados.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0RhdGF0YWJsZU5FVEhvcmFzRXh0cmFzRW1wbGVhZG9zLmNzaHRtbA==
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Usuario/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_HeaderAplicacion.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hlYWRlckFwbGljYWNpb24uY3NodG1s
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Usuario/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ModalCreateFeriado.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX01vZGFsQ3JlYXRlRmVyaWFkby5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ModalDetallePagoEmpleados.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX01vZGFsRGV0YWxsZVBhZ29FbXBsZWFkb3MuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ParametrosFecha.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1BhcmFtZXRyb3NGZWNoYS5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ReportesImpresion.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1JlcG9ydGVzSW1wcmVzaW9uLmNzaHRtbA==
+[C:/Users/siste/source/repos/DataFlowRRHH/Pages/Usuario/Update.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb1xVcGRhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/siste/source/repos/DataFlowRRHH/Pages/_ViewImports.cshtml]

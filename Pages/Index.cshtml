@@ -4,41 +4,25 @@
     ViewData["Title"] = "Modulo de Horas Extras BioAdmin";
 }
 
-<div id="processingIndicator">Procesando los datos...</div>
+@* <div id="processingIndicator">Procesando los datos...</div> *@
+
 <!--Capa de los calendarios y feriados------------>
 <div class="container-fluid">
     <div class="row">
-        <partial name="_HeaderAplicacion" />
+        <partial name="components/_HeaderAplicacion" />
         <!--Parametros de Fecha-->
-        <partial name="_ParametrosFecha" />
+        <partial name="components/_ParametrosFecha" />
         <!--Manejo de feriado-->
-        <div class="col-3 border" style="margin-left:10px">
-            <div class="alert alert-success py-2 my-4" role="alert">
-                <img src="images/holidays.png" style="margin-right:20px" />
-                <strong>Feriados y Excepciones:</strong>
-            </div>
-            <div class="container" style="display:flex;flex-direction:column;justify-content:space-around">
-                <p class="text-secondary">
-                    Haga click en el boton
-                    para ver el listado de
-                    los dias Feriados y
-                    las Excepciones creadas
-                    en el programa bioadmin.
-                </p>
-                <!-- Button trigger modal -->
-                <a href="/feriados/index" class="btn btn-primary">Ver Feriados</a>
-            </div>
-        </div>
-      
+        <partial name="components/_CuadroDiaFeriado" />
         <!--Reportes del Sistema-->
-        <partial name="_ReportesImpresion" />
+        <partial name="components/_ReportesImpresion" />
     </div> 
 </div>
 <!--fin de la capa de los calendarios y feriados-->
 <!--Datatable de las horas extras de empleados-->
-<partial name="_DatatableNETHorasExtrasEmpleados" />
+<partial name="components/_DatatableNETHorasExtrasEmpleados" />
 <!--Modal de detalle de pago a empleado-->
-<partial name="_ModalDetallePagoEmpleados" />
+<partial name="components/_ModalDetallePagoEmpleados" />
 
 <!--CODIGO JAVASCRIPT-->
  <script type="text/javascript" src="js/ModulosJS.js" ></script>
