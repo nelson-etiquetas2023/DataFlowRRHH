@@ -18,9 +18,11 @@ namespace DataFlowRRHH.Repositories.Implementations
 
         public virtual async Task<ActionResponse<T>> AddAsync(T entity)
         {
+
             Context.Add(entity);
             try
             {
+                
                 await Context.SaveChangesAsync();
                 return new ActionResponse<T>
                 {
@@ -31,7 +33,6 @@ namespace DataFlowRRHH.Repositories.Implementations
             catch (DbUpdateException)
             {
                 return GenericRepository<T>.DbUpdateExceptionActionResponse();
-
             }
             catch (Exception ex) 
             {
