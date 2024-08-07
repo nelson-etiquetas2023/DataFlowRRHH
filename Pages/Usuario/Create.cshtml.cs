@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace DataFlowRRHH.Pages.Usuario
 {
@@ -25,10 +26,11 @@ namespace DataFlowRRHH.Pages.Usuario
         {
             LoadOptions();
         }
-        public void OnPost()
+        public IActionResult OnPost()
         {
             Usuario.Active = true;
             _repository.AddAsync(Usuario);
+            return this.RedirectToPage("./Index");
         }
 
         private void LoadOptions() 

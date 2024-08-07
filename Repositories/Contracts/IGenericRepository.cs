@@ -7,7 +7,7 @@ namespace DataFlowRRHH.Repositories.Contracts
     {
         Task<ActionResponse<T>> GetByIdAsync(int id);
         IEnumerable<T> GetAllAsync();
-        Task<ActionResponse<T>> AddAsync(T entity);
+        void AddAsync(T entity);
         Task<ActionResponse<T>> DeleteAsync(int id);
         Task<ActionResponse<T>> UpdateAsync(T entity);
     }

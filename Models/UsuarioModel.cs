@@ -15,6 +15,7 @@ namespace DataFlowRRHH.Models
         [Required]
         public string TypeUser { get; set; } = null!;
         public string Phone { get; set; } = null!;
+        [Required]
         public string Departament { get; set; } = null!;
         public bool Active { get; set; }
     }

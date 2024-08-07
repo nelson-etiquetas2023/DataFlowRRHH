@@ -5,23 +5,27 @@
 <div class="row">
     <div class="col-6">
         <form method="post">
+            <div asp-validation-summary="All"></div> 
             <div class="form-group mb-3">
                 <label for="name">Nombre de Usuario:</label>
                 <input type="text" class="form-control shadow" placeholder="Introduzca el nombre del usuario" id="name" 
                 asp-for="@Model.Usuario.Name"
                 />
+                <span asp-validation-for="@Model.Usuario.Name"></span>
             </div>
             <div class="form-group mb-3">
                 <label for="email">Correo Electronico:</label>
                 <input type="text" class="form-control shadow" placeholder="Introduzca el correo electronico" id="email" 
                 asp-for="@Model.Usuario.Email"
                 />
+                <span asp-validation-for="@Model.Usuario.Email"></span>
             </div>
             <div class="form-group mb-3">
                 <label for="password">Contraseña:</label>
                 <input type="password" class="form-control shadow" placeholder="Introduzca la contraseña del usuario" id="password" 
                 asp-for="@Model.Usuario.Password"
                 />
+                <span asp-validation-for="@Model.Usuario.Password"></span>
             </div>
             <div class="form-group mb-3">
                 <label>Tipo de Usuario:</label>
@@ -29,6 +33,7 @@
                         class="form-select shadow">
                     <option selected disabled>Seleccione un tipo de usuario</option>
                 </select>
+                <span asp-validation-for="@Model.Usuario.TypeUser"></span>
             </div>
             <div class="form-group mb-3">
                 <label>Departamento:</label>
@@ -36,7 +41,9 @@
                         class="form-select shadow">
                     <option selected disabled>Seleccione un Departamento</option>
                 </select>
+                <span asp-validation-for="@Model.Usuario.Departament"></span>
             </div>
+
             <div class="form-group mb-3">
                 <label for="phone">Telefono:</label>
                 <input type="text" class="form-control shadow" placeholder="Introduzca el telefono del usuario" id="phone"
@@ -52,3 +59,10 @@
         </form>
     </div>
 </div>
+
+@section Scripts
+{
+   @{
+    <partial name="_ValidationScriptsPartial" />
+   }
+}

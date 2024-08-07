@@ -16,33 +16,10 @@ namespace DataFlowRRHH.Repositories.Implementations
             Entity = this.Context.Set<T>();
         }
 
-        public virtual async Task<ActionResponse<T>> AddAsync(T entity)
+        public void AddAsync(T entity)
         {
-
-            Context.Add(entity);
-            try
-            {
-                
-                await Context.SaveChangesAsync();
-                return new ActionResponse<T>
-                {
-                    WasSuccess = true,
-                    Result = entity
-                };
-            }
-            catch (DbUpdateException)
-            {
-                return GenericRepository<T>.DbUpdateExceptionActionResponse();
-            }
-            catch (Exception ex) 
-            {
-                return ExceptionActionResponse(ex);
-            }
-
-
-
-
-           
+                Context.Add(entity);
+                Context.SaveChanges();  
         }
 
         public virtual async Task<ActionResponse<T>> UpdateAsync(T entity)
